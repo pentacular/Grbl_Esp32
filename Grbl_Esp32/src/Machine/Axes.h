@@ -37,10 +37,10 @@ namespace Machine {
 
         inline char axisName(int index) { return index < MAX_NUMBER_AXIS ? _names[index] : '?'; }
 
-        Pin _sharedStepperDisable;
+        Setting<Pin> _sharedStepperDisable;
 
-        int   _numberAxis = 3;
-        Axis* _axis[MAX_NUMBER_AXIS];
+        Setting<int> _numberAxis = 3;
+        Axis*        _axis[MAX_NUMBER_AXIS];
 
         // Some small helpers to find the axis index and axis ganged index for a given motor. This
         // is helpful for some motors that need this info, as well as debug information.

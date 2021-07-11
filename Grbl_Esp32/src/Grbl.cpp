@@ -75,7 +75,7 @@ void grbl_init() {
 
         if (configOkay) {
             report_machine_type(CLIENT_SERIAL);
-            info_serial("Board: %s", config->_board.c_str());
+            info_serial("Board: %s", config->_board.get().c_str());
 
             // The initialization order reflects dependencies between the subsystems
             if (config->_i2so) {

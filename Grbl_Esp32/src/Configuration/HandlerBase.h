@@ -24,6 +24,7 @@
 #include "../EnumItem.h"
 #include "../SpindleDatatypes.h"
 #include "../UartTypes.h"
+#include "Setting.h"
 
 #include <IPAddress.h>
 
@@ -49,41 +50,47 @@ namespace Configuration {
         friend class GenericFactory;
 
     public:
-        virtual void item(const char* name, bool& value)                                                        = 0;
-        virtual void item(const char* name, int32_t& value, int32_t minValue = 0, int32_t maxValue = INT32_MAX) = 0;
+        virtual void item(const char* name, Setting<bool>& value)                                                        = 0;
+        virtual void item(const char* name, Setting<int32_t>& value, int32_t minValue = 0, int32_t maxValue = INT32_MAX) = 0;
 
         /* We bound uint32_t to INT32_MAX because we use the same parser */
-        void item(const char* name, uint32_t& value, uint32_t minValue = 0, uint32_t maxValue = INT32_MAX) {
-            int32_t v = int32_t(value);
-            item(name, v, int32_t(minValue), int32_t(maxValue));
-            value = uint32_t(v);
+        void item(const char* name, Setting<uint32_t>& value, uint32_t minValue = 0, uint32_t maxValue = INT32_MAX) {
+            int32_t          v = int32_t(value);
+            Setting<int32_t> tmp(v);
+            item(name, tmp, int32_t(minValue), int32_t(maxValue));
+            value.get() = uint32_t(tmp);
         }
 
-        void item(const char* name, uint8_t& value, uint8_t minValue = 0, uint8_t maxValue = UINT8_MAX) {
-            int32_t v = int32_t(value);
-            item(name, v, int32_t(minValue), int32_t(maxValue));
-            value = uint8_t(v);
+        void item(const char* name, Setting<uint8_t>& value, uint8_t minValue = 0, uint8_t maxValue = UINT8_MAX) {
+            int32_t          v = int32_t(value);
+            Setting<int32_t> tmp(v);
+            item(name, tmp, int32_t(minValue), int32_t(maxValue));
+            value.get() = uint8_t(tmp);
         }
 
-        virtual void item(const char* name, float& value, float minValue = -3e38, float maxValue = 3e38)  = 0;
-        virtual void item(const char* name, std::vector<speedEntry>& value)                               = 0;
-        virtual void item(const char* name, UartData& wordLength, UartParity& parity, UartStop& stopBits) = 0;
+        virtual void item(const char* name, Setting<float>& value, float minValue = -3e38, float maxValue = 3e38)                    = 0;
+        virtual void item(const char* name, Setting<std::vector<speedEntry>>& value)                                                 = 0;
+        virtual void item(const char* name, Setting<UartData>& wordLength, Setting<UartParity>& parity, Setting<UartStop>& stopBits) = 0;
 
-        virtual void item(const char* name, StringRange& value, int minLength = 0, int maxLength = 255) = 0;
-        virtual void item(const char* name, Pin& value)                                                 = 0;
-        virtual void item(const char* name, IPAddress& value)                                           = 0;
+        virtual void item(const char* name, Setting<StringRange>& value, int minLength = 0, int maxLength = 255) = 0;
+        virtual void item(const char* name, Setting<Pin>& value)                                                 = 0;
+        virtual void item(const char* name, Setting<IPAddress>& value)                                           = 0;
 
-        virtual void item(const char* name, int& value, EnumItem* e) = 0;
+        virtual void item(const char* name, Setting<int>& value, EnumItem* e) = 0;
 
-        virtual void item(const char* name, String& value) {
-            StringRange range(value);
-            StringRange copy(value);
+        virtual void item(const char* name, Setting<String>& value) {
+            StringRange range(value.get());
+            StringRange copy(value.get());
 
-            item(name, range);
+            Setting<StringRange> tmp(range);
+
+            item(name, tmp);
 
             // Check for changes, and update if the string is changed.
-            if (range.begin() != copy.begin() || range.end() != copy.end()) {
-                value = range.str();
+            const StringRange& sr = tmp.get();
+            if (sr.begin() != copy.begin() || sr.end() != copy.end()) {
+                String newStr = sr.str();
+                value.get()   = newStr;
             }
         }
 

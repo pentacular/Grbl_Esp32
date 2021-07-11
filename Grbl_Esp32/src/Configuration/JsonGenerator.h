@@ -51,14 +51,14 @@ namespace Configuration {
     public:
         JsonGenerator(WebUI::JSONencoder& encoder);
 
-        void item(const char* name, bool& value) override;
-        void item(const char* name, int& value, int32_t minValue, int32_t maxValue) override;
-        void item(const char* name, float& value, float minValue, float maxValue) override;
-        void item(const char* name, std::vector<speedEntry>& value) override;
-        void item(const char* name, UartData& wordLength, UartParity& parity, UartStop& stopBits) override; 
-        void item(const char* name, StringRange& value, int minLength, int maxLength) override;
-        void item(const char* name, Pin& value) override;
-        void item(const char* name, IPAddress& value) override;
-        void item(const char* name, int& value, EnumItem* e) override;
+        void item(const char* name, Setting<bool>& value) override;
+        void item(const char* name, Setting<int>& value, int32_t minValue, int32_t maxValue) override;
+        void item(const char* name, Setting<float>& value, float minValue, float maxValue) override;
+        void item(const char* name, Setting<std::vector<speedEntry>>& value) override;
+        void item(const char* name, Setting < UartData >& wordLength, Setting < UartParity >& parity, Setting < UartStop >& stopBits) override; 
+        void item(const char* name, Setting<StringRange>& value, int minLength, int maxLength) override;
+        void item(const char* name, Setting<Pin>& value) override;
+        void item(const char* name, Setting<IPAddress>& value) override;
+        void item(const char* name, Setting<int>& value, EnumItem* e) override;
     };
 }

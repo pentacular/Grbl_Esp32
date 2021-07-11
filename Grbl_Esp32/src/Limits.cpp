@@ -116,8 +116,8 @@ static void limits_go_home(uint8_t cycle_mask, uint32_t n_locate_cycles) {
         return;  // Block if system reset has been issued.
     }
 
-    auto axes   = config->_axes;
-    auto n_axis = axes->_numberAxis;
+    auto    axes   = config->_axes;
+    int32_t n_axis = axes->_numberAxis;
 
     cycle_mask &= homingAxes;
 
@@ -186,9 +186,9 @@ static void limits_go_home(uint8_t cycle_mask, uint32_t n_locate_cycles) {
             auto axisConfig = config->_axes->_axis[axis];
             auto homing     = axisConfig->_homing;
 
-            debounce = std::max(debounce, homing->_debounce_ms);
+            debounce = std::max(debounce, homing->_debounce_ms.get());
 
-            auto axis_homing_rate = seek ? homing->_seekRate : homing->_feedRate;
+            auto axis_homing_rate = seek ? homing->_seekRate.get() : homing->_feedRate.get();
 
             // Accumulate the squares of the homing rates for later use
             // in computing the aggregate feed rate.
@@ -197,7 +197,7 @@ static void limits_go_home(uint8_t cycle_mask, uint32_t n_locate_cycles) {
             // Set target location for active axes and setup computation for homing rate.
             sys_position[axis] = 0;
 
-            auto travel = approach ? axisConfig->_maxTravel : homing->_pulloff;
+            float travel = approach ? axisConfig->_maxTravel.get() : homing->_pulloff.get();
 
             // First we compute the maximum-time-to-completion vector; later we will
             // convert it back to positions after we determine the limiting axis.
@@ -217,7 +217,7 @@ static void limits_go_home(uint8_t cycle_mask, uint32_t n_locate_cycles) {
         for (int axis = 0; axis < n_axis; axis++) {
             if (bitnum_istrue(axislock, axis)) {
                 auto homing = config->_axes->_axis[axis]->_homing;
-                auto scaler = approach ? homing->_seek_scaler : homing->_feed_scaler;
+                auto scaler = approach ? homing->_seek_scaler.get() : homing->_feed_scaler.get();
                 target[axis] *= limitingRate * scaler;
             }
         }
@@ -288,9 +288,9 @@ static void limits_go_home(uint8_t cycle_mask, uint32_t n_locate_cycles) {
         Machine::Axis* axisConf = config->_axes->_axis[axis];
         auto           homing   = axisConf->_homing;
         if (bitnum_istrue(cycle_mask, axis)) {
-            auto mpos    = homing->_mpos;
-            auto pulloff = homing->_pulloff;
-            auto steps   = axisConf->_stepsPerMm;
+            float mpos    = homing->_mpos;
+            float pulloff = homing->_pulloff;
+            float steps   = axisConf->_stepsPerMm;
             if (homing->_positiveDirection) {
                 sys_position[axis] = int32_t((mpos + pulloff) * steps);
             } else {
@@ -319,7 +319,7 @@ static bool mask_is_single_axis(AxisMask axis_mask) {
 static AxisMask squaredAxes() {
     AxisMask mask   = 0;
     auto     axes   = config->_axes;
-    auto     n_axis = axes->_numberAxis;
+    int32_t  n_axis = axes->_numberAxis;
     for (int axis = 0; axis < n_axis; axis++) {
         auto homing = axes->_axis[axis]->_homing;
         if (homing && homing->_square) {
@@ -385,8 +385,8 @@ void limits_run_homing_cycles(AxisMask axis_mask) {
 
         for (int cycle = 1; cycle <= MAX_N_AXIS; cycle++) {
             // Set axis_mask to the axes that home on this cycle
-            axis_mask   = 0;
-            auto n_axis = config->_axes->_numberAxis;
+            axis_mask      = 0;
+            int32_t n_axis = config->_axes->_numberAxis;
             for (int axis = 0; axis < n_axis; axis++) {
                 auto axisConfig = config->_axes->_axis[axis];
                 auto homing     = axisConfig->_homing;
@@ -409,8 +409,8 @@ void limits_run_homing_cycles(AxisMask axis_mask) {
 }
 
 void limits_init() {
-    auto axes   = config->_axes;
-    auto n_axis = axes->_numberAxis;
+    auto    axes   = config->_axes;
+    int32_t n_axis = axes->_numberAxis;
     for (int axis = 0; axis < n_axis; axis++) {
         if (axes->_axis[axis]->_homing) {
             bitnum_true(homingAxes, axis);
@@ -454,7 +454,7 @@ void limits_init() {
 }
 
 void limits_homing_mode() {
-    auto n_axis = config->_axes->_numberAxis;
+    int32_t n_axis = config->_axes->_numberAxis;
     for (int axis = 0; axis < n_axis; axis++) {
         for (int gang_index = 0; gang_index < 2; gang_index++) {
             auto gangConfig = config->_axes->_axis[axis]->_gangs[gang_index];
@@ -467,7 +467,7 @@ void limits_homing_mode() {
 }
 
 void limits_run_mode() {
-    auto n_axis = config->_axes->_numberAxis;
+    int32_t n_axis = config->_axes->_numberAxis;
     for (int axis = 0; axis < n_axis; axis++) {
         for (int gang_index = 0; gang_index < 2; gang_index++) {
             auto gangConfig = config->_axes->_axis[axis]->_gangs[gang_index];
@@ -498,7 +498,7 @@ static bool limits_check_axis(int axis) {
 // Return a mask of the switches that are engaged.
 AxisMask limits_check(AxisMask check_mask) {
     AxisMask pinMask = 0;
-    auto     n_axis  = config->_axes->_numberAxis;
+    int32_t  n_axis  = config->_axes->_numberAxis;
     for (int axis = 0; axis < n_axis; axis++) {
         if (bitnum_istrue(check_mask, axis)) {
             if (limits_check_axis(axis)) {
@@ -566,8 +566,8 @@ void limitCheckTask(void* pvParameters) {
 float limitsMaxPosition(uint8_t axis) {
     auto  axisConfig = config->_axes->_axis[axis];
     auto  homing     = axisConfig->_homing;
-    float mpos       = (homing != nullptr) ? homing->_mpos : 0;
-    auto  maxtravel  = axisConfig->_maxTravel;
+    float mpos       = (homing != nullptr) ? homing->_mpos.get() : 0.0f;
+    float maxtravel  = axisConfig->_maxTravel;
 
     return (homing == nullptr || homing->_positiveDirection) ? mpos + maxtravel : mpos;
 }
@@ -575,8 +575,8 @@ float limitsMaxPosition(uint8_t axis) {
 float limitsMinPosition(uint8_t axis) {
     auto  axisConfig = config->_axes->_axis[axis];
     auto  homing     = axisConfig->_homing;
-    float mpos       = (homing != nullptr) ? homing->_mpos : 0;
-    auto  maxtravel  = axisConfig->_maxTravel;
+    float mpos       = (homing != nullptr) ? homing->_mpos.get() : 0.0f;
+    float maxtravel  = axisConfig->_maxTravel;
 
     return (homing == nullptr || homing->_positiveDirection) ? mpos : mpos - maxtravel;
 }
@@ -585,8 +585,8 @@ float limitsMinPosition(uint8_t axis) {
 // Return true if exceeding limits
 // Set $<axis>/MaxTravel=0 to selectively remove an axis from soft limit checks
 bool WEAK_LINK limitsCheckTravel(float* target) {
-    auto axes   = config->_axes;
-    auto n_axis = axes->_numberAxis;
+    auto    axes   = config->_axes;
+    int32_t n_axis = axes->_numberAxis;
     for (int axis = 0; axis < n_axis; axis++) {
         auto axisSetting = axes->_axis[axis];
         if ((target[axis] < limitsMinPosition(axis) || target[axis] > limitsMaxPosition(axis)) && axisSetting->_maxTravel > 0) {

@@ -57,8 +57,8 @@ namespace Motors {
         float _dxl_count_min;
         float _dxl_count_max;
 
-        int  _axis_index;
-        bool _invert_direction = false;
+        int           _axis_index;
+        Setting<bool> _invert_direction = false;
 
         Uart* _uart = nullptr;
 
@@ -96,10 +96,10 @@ namespace Motors {
         // control modes
         static const int DXL_CONTROL_MODE_POSITION = 3;
 
-        int _countMin = 1024;
-        int _countMax = 3072;
+        Setting<int> _countMin = 1024;
+        Setting<int> _countMax = 3072;
 
-        int _dynamixelFullTimeMove = 1000;  // time in milliseconds to do a full DYNAMIXEL_FULL_MOVE_TIME
+        Setting<int> _dynamixelFullTimeMove = 1000;  // time in milliseconds to do a full DYNAMIXEL_FULL_MOVE_TIME
 
         bool _disabled;
         bool _has_errors;
@@ -131,7 +131,7 @@ namespace Motors {
             handler.item("full_time_move", _dynamixelFullTimeMove);
             handler.section("uart", _uart);
 
-            int id = _id;
+            Setting<int> id = _id;
             handler.item("id", id);
             _id = id;
         }

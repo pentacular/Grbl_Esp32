@@ -149,7 +149,7 @@ float hypot_f(float x, float y) {
 float convert_delta_vector_to_unit_vector(float* vector) {
     uint8_t idx;
     float   magnitude = 0.0;
-    auto    n_axis    = config->_axes->_numberAxis;
+    int32_t n_axis    = config->_axes->_numberAxis;
     for (idx = 0; idx < n_axis; idx++) {
         if (vector[idx] != 0.0) {
             magnitude += vector[idx] * vector[idx];
@@ -167,7 +167,7 @@ const float secPerMinSq = 60.0 * 60.0;  // Seconds Per Minute Squared, for accel
 float       limit_acceleration_by_axis_maximum(float* unit_vec) {
     uint8_t idx;
     float   limit_value = SOME_LARGE_VALUE;
-    auto    n_axis      = config->_axes->_numberAxis;
+    int32_t n_axis      = config->_axes->_numberAxis;
     for (idx = 0; idx < n_axis; idx++) {
         auto axisSetting = config->_axes->_axis[idx];
         if (unit_vec[idx] != 0) {  // Avoid divide by zero.
@@ -184,7 +184,7 @@ float       limit_acceleration_by_axis_maximum(float* unit_vec) {
 float limit_rate_by_axis_maximum(float* unit_vec) {
     uint8_t idx;
     float   limit_value = SOME_LARGE_VALUE;
-    auto    n_axis      = config->_axes->_numberAxis;
+    int32_t n_axis      = config->_axes->_numberAxis;
     for (idx = 0; idx < n_axis; idx++) {
         auto axisSetting = config->_axes->_axis[idx];
         if (unit_vec[idx] != 0) {  // Avoid divide by zero.

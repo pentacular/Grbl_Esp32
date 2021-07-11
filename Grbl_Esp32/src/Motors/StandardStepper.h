@@ -27,9 +27,9 @@ namespace Motors {
     protected:
         void config_message() override;
 
-        Pin _step_pin;
-        Pin _dir_pin;
-        Pin _disable_pin;
+        Setting<Pin> _step_pin;
+        Setting<Pin> _dir_pin;
+        Setting<Pin> _disable_pin;
 
         // Configuration handlers:
         void validate() const override;

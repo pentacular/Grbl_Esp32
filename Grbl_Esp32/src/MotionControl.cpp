@@ -160,7 +160,7 @@ void mc_arc(float*            target,
     float previous_position[MAX_N_AXIS] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
     uint16_t n;
-    auto     n_axis = config->_axes->_numberAxis;
+    int32_t n_axis = config->_axes->_numberAxis;
     for (n = 0; n < n_axis; n++) {
         previous_position[n] = position[n];
     }

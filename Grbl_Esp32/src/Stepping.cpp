@@ -21,10 +21,10 @@ namespace Machine {
         info_serial("Step type:%s Pulse:%dus Dsbl Delay:%dus Dir Delay:%dus Idle Delay:%dms",
                     // stepping->name(),
                     stepTypes[_engine].name,
-                    _pulseUsecs,
-                    _disableDelayUsecs,
-                    _directionDelayUsecs,
-                    _idleMsecs);
+                    _pulseUsecs.get(),
+                    _disableDelayUsecs.get(),
+                    _directionDelayUsecs.get(),
+                    _idleMsecs.get());
 
         // Prepare stepping interrupt callbacks.  The one that is actually
         // used is determined by timerStart() and timerStop()

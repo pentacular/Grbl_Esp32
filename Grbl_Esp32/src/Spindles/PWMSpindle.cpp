@@ -64,10 +64,10 @@ namespace Spindles {
         _enable_pin.setAttr(Pin::Attr::Output);
         _direction_pin.setAttr(Pin::Attr::Output);
 
-        if (_speeds.size() == 0) {
+        if (_speeds.get().size() == 0) {
             // The default speed map for a PWM spindle is linear from 0=0% to 10000=100%
-            _speeds.push_back({ 0, 0 });
-            _speeds.push_back({ 10000, 100 });
+            _speeds.get().push_back({ 0, 0 });
+            _speeds.get().push_back({ 10000, 100 });
         }
         setupSpeeds(_pwm_period);
         config_message();

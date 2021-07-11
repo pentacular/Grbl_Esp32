@@ -123,7 +123,7 @@ namespace WebUI {
         end();
 
         debug_serial("end");
-        if (_btname.length()) {
+        if (_btname.get().length()) {
             debug_serial("length");
             if (!SerialBT.begin(_btname)) {
                 debug_serial("name");
@@ -132,7 +132,7 @@ namespace WebUI {
             }
             debug_serial("register");
             SerialBT.register_callback(&my_spp_cb);
-            info_all("BT Started with %s", _btname.c_str());
+            info_all("BT Started with %s", _btname.get().c_str());
             return true;
         }
         info_all("BT is not enabled");

@@ -50,8 +50,8 @@ private:
     uint32_t  _current_line_number;   // the most recent line number read
     char      comment[COMMENT_SIZE];  // Line to be executed. Zero-terminated.
 
-    State _state;
-    Pin   _cardDetect;
+    State        _state;
+    Setting<Pin> _cardDetect;
 
 public:
     bool _readyNext;  // Grbl has processed a line and is waiting for another

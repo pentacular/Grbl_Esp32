@@ -62,7 +62,7 @@ namespace Spindles {
         void set_enable(bool enable_pin);
         void set_direction(bool Clockwise);
 
-        Pin _forward_pin;
-        Pin _reverse_pin;
+        Setting<Pin> _forward_pin;
+        Setting<Pin> _reverse_pin;
     };
 }

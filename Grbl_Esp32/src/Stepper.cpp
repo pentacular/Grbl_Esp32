@@ -201,7 +201,7 @@ static st_prep_t prep;
  * is to keep pulse timing as regular as possible.
  */
 void IRAM_ATTR Stepper::pulse_func() {
-    auto n_axis = config->_axes->_numberAxis;
+    int32_t n_axis = config->_axes->_numberAxis;
 
     config->_axes->step(st.step_outbits, st.dir_outbits);
 
@@ -438,7 +438,7 @@ void Stepper::prep_buffer() {
                 st_prep_block                 = &st_block_buffer[prep.st_block_index];
                 st_prep_block->direction_bits = pl_block->direction_bits;
                 uint8_t idx;
-                auto    n_axis = config->_axes->_numberAxis;
+                int32_t n_axis = config->_axes->_numberAxis;
 
                 // Bit-shift multiply all Bresenham data by the max AMASS level so that
                 // we never divide beyond the original data anywhere in the algorithm.

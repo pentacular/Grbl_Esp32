@@ -20,6 +20,7 @@
 
 #include "Generator.h"
 #include "Parser.h"
+#include "Setting.h"
 
 namespace Configuration {
     class HandlerBase;

@@ -977,7 +977,7 @@ namespace WebUI {
         webPrintln("Persistent web settings - $name to show, $name=value to set");
         webPrintln("ESPname FullName         Description");
         webPrintln("------- --------         -----------");
-        for (Setting* s = Setting::List; s; s = s->next()) {
+        for (NVSSetting* s = NVSSetting::List; s; s = s->next()) {
             if (s->getType() == WEBSET) {
                 if (s->getGrblName()) {
                     webPrint(" ", s->getGrblName());

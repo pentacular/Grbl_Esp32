@@ -63,7 +63,7 @@ namespace Spindles {
                  _direction_pin.name().c_str(),
                  _forward_pin.name().c_str(),
                  _reverse_pin.name().c_str(),
-                 _pwm_freq,
+                 _pwm_freq.get(),
                  _pwm_precision);
     }
 

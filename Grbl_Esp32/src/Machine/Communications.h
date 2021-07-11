@@ -37,13 +37,13 @@ namespace Machine {
     public:
         Communications() = default;
 
-        bool _telnetEnable = true;
-        int  _telnetPort   = 23;
+        Setting<bool> _telnetEnable = true;
+        Setting<int>  _telnetPort   = 23;
 
-        bool _httpEnable = true;
-        int  _httpPort   = 80;
+        Setting<bool> _httpEnable = true;
+        Setting<int>  _httpPort   = 80;
 
-        String _hostname = "grblesp";
+        Setting<String> _hostname = "grblesp";
 
         WebUI::BTConfig* _bluetoothConfig = nullptr;
         WifiAPConfig*    _apConfig        = nullptr;

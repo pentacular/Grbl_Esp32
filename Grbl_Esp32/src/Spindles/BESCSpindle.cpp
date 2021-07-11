@@ -65,7 +65,7 @@ namespace Spindles {
         _min_pulse_counts  = (_min_pulse_us << _pwm_precision) / pulse_period_us;
         _pulse_span_counts = ((_max_pulse_us - _min_pulse_us) << _pwm_precision) / pulse_period_us;
 
-        if (_speeds.size() == 0) {
+        if (_speeds.get().size() == 0) {
             shelfSpeeds(4000, 20000);
         }
 
@@ -103,9 +103,9 @@ namespace Spindles {
     void BESC::config_message() {
         info_all("BESC spindle on Pin:%s Min:%dus Max:%dus Freq:%dHz Res:%dbits",
                  _output_pin.name().c_str(),
-                 _min_pulse_us,
-                 _max_pulse_us,
-                 _pwm_freq,
+                 _min_pulse_us.get(),
+                 _max_pulse_us.get(),
+                 _pwm_freq.get(),
                  _pwm_precision);
     }
 

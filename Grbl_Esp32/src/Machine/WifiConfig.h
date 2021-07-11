@@ -24,18 +24,17 @@
 namespace Machine {
     class WifiConfig : public Configuration::Configurable {
     public:
-        IPAddress _ipAddress;
-        IPAddress _gateway;
-        IPAddress _netmask;
-
-        WifiConfig() : _ipAddress(10, 0, 0, 1), _gateway(10, 0, 0, 1), _netmask(255, 255, 0, 0) {}
-
-        String _ssid = "GRBL_ESP";
+        WifiConfig() : _ipAddress(IPAddress(10, 0, 0, 1)), _gateway(IPAddress(10, 0, 0, 1)), _netmask(IPAddress(255, 255, 0, 0)) {}
+        
+        Setting<IPAddress> _ipAddress;
+        Setting<IPAddress> _gateway;
+        Setting<IPAddress> _netmask;
+        Setting<String>    _ssid = "GRBL_ESP";
 
         // Passwords don't belong in a YAML!
         // String _password = "12345678";
 
-        bool _dhcp = true;
+        Setting<bool> _dhcp = true;
 
         void group(Configuration::HandlerBase& handler) override {
             handler.item("ssid", _ssid);

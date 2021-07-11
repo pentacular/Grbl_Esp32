@@ -103,7 +103,7 @@ namespace Motors {
                     _dir_pin.name().c_str(),
                     _disable_pin.name().c_str(),
                     _addr,
-                    _r_sense,
+                    _r_sense.get(),
                     reportAxisLimitsMsg(axis_index()));
     }
 
@@ -219,12 +219,12 @@ namespace Motors {
             case TrinamicMode ::StallGuard:  //TODO: check all configurations for stallguard
             {
                 auto axisConfig     = config->_axes->_axis[this->axis_index()];
-                auto homingFeedRate = (axisConfig->_homing != nullptr) ? axisConfig->_homing->_feedRate : 200;
+                auto homingFeedRate = (axisConfig->_homing != nullptr) ? axisConfig->_homing->_feedRate.get() : 200.0f;
                 //info_serial("Stallguard");
                 tmcstepper->en_spreadCycle(false);
                 tmcstepper->pwm_autoscale(false);
                 tmcstepper->TCOOLTHRS(calc_tstep(homingFeedRate, 150.0));
-                tmcstepper->SGTHRS(constrain(_stallguard, 0, 255));
+                tmcstepper->SGTHRS(constrain(_stallguard.get(), 0, 255));
                 break;
             }
             default:
@@ -251,7 +251,7 @@ namespace Motors {
                     reportAxisNameMsg(axis_index(), dual_axis_index()),
                     tmcstepper->SG_RESULT(),  //    tmcstepper->sg_result(),
                     feedrate,
-                    constrain(_stallguard, -64, 63));
+                    constrain(_stallguard.get(), -64, 63));
 
         TMC2208_n ::DRV_STATUS_t status { 0 };  // a useful struct to access the bits.
         status.sr = tmcstepper->DRV_STATUS();

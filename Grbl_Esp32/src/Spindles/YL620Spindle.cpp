@@ -169,7 +169,7 @@ namespace Spindles {
                 // frequency is in Hz * 10, so RPM is frequency * 60 / 10 = frequency * 6
                 // E.g. for 400 Hz, we have frequency = 4000, so 4000 * 6 = 24000 RPM
 
-                if (vfd->_speeds.size() == 0) {
+                if (vfd->_speeds.get().size() == 0) {
                     // Convert from frequency in deciHz to RPM (*60/10)
                     SpindleSpeed maxRPM = yl620->_maxFrequency * 6;
                     SpindleSpeed minRPM = yl620->_minFrequency * 6;

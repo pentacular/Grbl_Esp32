@@ -63,13 +63,13 @@ namespace Spindles {
         const char* name() const override { return "OnOff"; }
 
     protected:
-        Pin _enable_pin;
-        Pin _output_pin;
-        Pin _direction_pin;
+        Setting<Pin> _enable_pin;
+        Setting<Pin> _output_pin;
+        Setting<Pin> _direction_pin;
         // _disable_with_zero_speed forces a disable when speed is 0
-        bool _disable_with_zero_speed = false;
+        Setting<bool> _disable_with_zero_speed = false;
         // _zero_speed_with_disable forces speed to 0 when disabled
-        bool _zero_speed_with_disable = true;
+        Setting<bool> _zero_speed_with_disable = true;
 
         virtual void set_output(uint32_t speed);
         virtual void deinit();

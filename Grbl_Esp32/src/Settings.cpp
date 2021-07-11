@@ -41,9 +41,9 @@ Command::Command(
     List = this;
 }
 
-Setting* Setting::List = NULL;
+NVSSetting* NVSSetting::List = NULL;
 
-Setting::Setting(
+NVSSetting::NVSSetting(
     const char* description, type_t type, permissions_t permissions, const char* grblName, const char* fullName, bool (*checker)(char*)) :
     Word(type, permissions, description, grblName, fullName),
     _checker(checker) {
@@ -67,7 +67,7 @@ Setting::Setting(
     }
 }
 
-Error Setting::check(char* s) {
+Error NVSSetting::check(char* s) {
     if (sys.state != State::Idle && sys.state != State::Alarm) {
         return Error::IdleError;
     }
@@ -77,9 +77,9 @@ Error Setting::check(char* s) {
     return _checker(s) ? Error::Ok : Error::InvalidValue;
 }
 
-nvs_handle Setting::_handle = 0;
+nvs_handle NVSSetting::_handle = 0;
 
-void Setting::init() {
+void NVSSetting::init() {
     if (!_handle) {
         if (esp_err_t err = nvs_open("Grbl_ESP32", NVS_READWRITE, &_handle)) {
             debug_serial("nvs_open failed with error %d", err);
@@ -97,7 +97,7 @@ IntSetting::IntSetting(const char*   description,
                        int32_t       maxVal,
                        bool (*checker)(char*) = NULL,
                        bool currentIsNvm) :
-    Setting(description, type, permissions, grblName, name, checker),
+    NVSSetting(description, type, permissions, grblName, name, checker),
     _defaultValue(defVal), _currentValue(defVal), _minValue(minVal), _maxValue(maxVal), _currentIsNvm(currentIsNvm) {
     _storedValue = std::numeric_limits<int32_t>::min();
 }
@@ -197,7 +197,7 @@ StringSetting::StringSetting(const char*   description,
                              int           min,
                              int           max,
                              bool (*checker)(char*)) :
-    Setting(description, type, permissions, grblName, name, checker) {
+    NVSSetting(description, type, permissions, grblName, name, checker) {
     _defaultValue = defVal;
     _currentValue = defVal;
     _minLength    = min;
@@ -291,7 +291,7 @@ EnumSetting::EnumSetting(const char*   description,
                          int8_t        defVal,
                          enum_opt_t*   opts,
                          bool (*checker)(char*) = NULL) :
-    Setting(description, type, permissions, grblName, name, checker),
+    NVSSetting(description, type, permissions, grblName, name, checker),
     _defaultValue(defVal), _options(opts) {}
 
 void EnumSetting::load() {
@@ -399,7 +399,7 @@ Coordinates* coords[CoordIndex::End];
 
 bool Coordinates::load() {
     size_t len;
-    switch (nvs_get_blob(Setting::_handle, _name, _currentValue, &len)) {
+    switch (nvs_get_blob(NVSSetting::_handle, _name, _currentValue, &len)) {
         case ESP_OK:
             return true;
         case ESP_ERR_NVS_INVALID_LENGTH:
@@ -422,5 +422,5 @@ void Coordinates::set(float value[MAX_N_AXIS]) {
     if (FORCE_BUFFER_SYNC_DURING_NVS_WRITE) {
         protocol_buffer_synchronize();
     }
-    nvs_set_blob(Setting::_handle, _name, _currentValue, sizeof(_currentValue));
+    nvs_set_blob(NVSSetting::_handle, _name, _currentValue, sizeof(_currentValue));
 }

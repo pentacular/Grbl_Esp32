@@ -29,7 +29,7 @@ namespace Spindles {
     // this is the same as a PWM spindle but the M4 compensation is supported.
     class Laser : public PWM {
     private:
-        uint32_t _laser_full_power;
+        Setting<uint32_t> _laser_full_power;
 
     public:
         Laser() = default;

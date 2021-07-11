@@ -25,10 +25,10 @@ namespace Machine {
     public:
         SPIBus() = default;
 
-        Pin _cs;
-        Pin _miso;
-        Pin _mosi;
-        Pin _sck;
+        Setting<Pin> _cs;
+        Setting<Pin> _miso;
+        Setting<Pin> _mosi;
+        Setting<Pin> _sck;
 
         void validate() const override;
         void group(Configuration::HandlerBase& handler) override;

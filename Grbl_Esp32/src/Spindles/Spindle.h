@@ -51,8 +51,8 @@ namespace Spindles {
         Spindle& operator=(Spindle&&) = delete;
 
         bool     _defaultedSpeeds;
-        uint32_t offSpeed() { return _speeds[0].offset; }
-        uint32_t maxSpeed() { return _speeds[_speeds.size() - 1].speed; }
+        uint32_t offSpeed() { return _speeds.get()[0].offset; }
+        uint32_t maxSpeed() { return _speeds.get()[_speeds.get().size() - 1].speed; }
         uint32_t mapSpeed(SpindleSpeed speed);
         void     setupSpeeds(uint32_t max_dev_speed);
         void     shelfSpeeds(SpindleSpeed min, SpindleSpeed max);
@@ -79,12 +79,12 @@ namespace Spindles {
 
         // scaler units are ms/rpm * 2^16.
         // The computation is deltaRPM * scaler >> 16
-        uint32_t _spinup_ms   = 0;
-        uint32_t _spindown_ms = 0;
+        Setting<uint32_t> _spinup_ms   = 0;
+        Setting<uint32_t> _spindown_ms = 0;
 
-        int _tool = -1;
+        Setting<int> _tool = -1;
 
-        std::vector<Configuration::speedEntry> _speeds;
+        Setting<std::vector<Configuration::speedEntry>> _speeds;
 
         // Name is required for the configuration factory to work.
         virtual const char* name() const = 0;

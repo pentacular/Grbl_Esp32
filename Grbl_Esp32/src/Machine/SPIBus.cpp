@@ -60,16 +60,16 @@ namespace Machine {
     // XXX it would be nice to have some way to turn off SPI entirely
     void SPIBus::afterParse() {
         if (_cs.undefined()) {
-            _cs = Pin::create("gpio.5");
+            _cs.get() = Pin::create("gpio.5");
         }
         if (_miso.undefined()) {
-            _miso = Pin::create("gpio.19");
+            _miso.get() = Pin::create("gpio.19");
         }
         if (_mosi.undefined()) {
-            _mosi = Pin::create("gpio.23");
+            _mosi.get() = Pin::create("gpio.23");
         }
         if (_sck.undefined()) {
-            _sck = Pin::create("gpio.18");
+            _sck.get() = Pin::create("gpio.18");
         }
     }
 }

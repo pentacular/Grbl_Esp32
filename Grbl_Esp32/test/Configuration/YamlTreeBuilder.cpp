@@ -10,9 +10,9 @@
 namespace Configuration {
     class TestBasic : public Configurable {
     public:
-        String a;
-        String b;
-        String c;
+        Setting<String> a;
+        Setting<String> b;
+        Setting<String> c;
 
         void validate() const {}
         void group(HandlerBase& handler) {
@@ -24,8 +24,8 @@ namespace Configuration {
 
     class TestBasic2 : public Configurable {
     public:
-        String aap;
-        int    banaan;
+        Setting<String> aap;
+        Setting<int>    banaan;
 
         void validate() const {}
         void group(HandlerBase& handler) {
@@ -47,9 +47,9 @@ namespace Configuration {
 
     class TestBasicEnum : public Configurable {
     public:
-        int aap;
-        int value;
-        int banaan;
+        Setting<int> aap;
+        Setting<int> value;
+        Setting<int> banaan;
 
         void validate() const {}
         void group(HandlerBase& handler) override {
@@ -63,7 +63,7 @@ namespace Configuration {
     public:
         TestBasic*  n1  = nullptr;
         TestBasic2* n2  = nullptr;
-        int         foo = 0;
+        Setting<int>         foo = 0;
 
         void validate() const {}
         void group(HandlerBase& handler) override {
@@ -96,9 +96,9 @@ namespace Configuration {
         TestBasic test;
         Helper::Parse(config, test);
 
-        Assert(test.a == "aap");
-        Assert(test.b == "banaan");
-        Assert(test.c == "chocolade");
+        Assert(test.a.get() == "aap");
+        Assert(test.b.get() == "banaan");
+        Assert(test.c.get() == "chocolade");
     }
 
     Test(YamlTreeBuilder, BasicPropertiesInvert) {
@@ -109,9 +109,9 @@ namespace Configuration {
         TestBasic test;
         Helper::Parse(config, test);
 
-        Assert(test.a == "aap");
-        Assert(test.b == "banaan");
-        Assert(test.c == "chocolade");
+        Assert(test.a.get() == "aap");
+        Assert(test.b.get() == "banaan");
+        Assert(test.c.get() == "chocolade");
     }
 
     Test(YamlTreeBuilder, BasicProperties2) {
@@ -121,8 +121,8 @@ namespace Configuration {
         TestBasic2 test;
         Helper::Parse(config, test);
 
-        Assert(test.aap == "aap");
-        Assert(test.banaan == 2);
+        Assert(test.aap.get() == "aap");
+        Assert(test.banaan.get() == 2);
     }
 
     Test(YamlTreeBuilder, BasicPropertiesInvert2) {
@@ -132,8 +132,8 @@ namespace Configuration {
         TestBasic2 test;
         Helper::Parse(config, test);
 
-        Assert(test.aap == "aap");
-        Assert(test.banaan == 2);
+        Assert(test.aap.get() == "aap");
+        Assert(test.banaan.get() == 2);
     }
 
     Test(YamlTreeBuilder, Hierarchical1) {
@@ -152,15 +152,15 @@ namespace Configuration {
 
         {
             Assert(test.n1 != nullptr);
-            Assert(test.n1->a == "aap");
-            Assert(test.n1->b == "banaan");
-            Assert(test.n1->c == "chocolade");
+            Assert(test.n1->a.get() == "aap");
+            Assert(test.n1->b.get() == "banaan");
+            Assert(test.n1->c.get() == "chocolade");
         }
 
         {
             Assert(test.n2 != nullptr);
-            Assert(test.n2->banaan == 2);
-            Assert(test.n2->aap == "aap");
+            Assert(test.n2->banaan.get() == 2);
+            Assert(test.n2->aap.get() == "aap");
         }
         Assert(test.foo == 2);
     }
@@ -181,15 +181,15 @@ namespace Configuration {
 
         {
             Assert(test.n1 != nullptr);
-            Assert(test.n1->a == "aap");
-            Assert(test.n1->b == "banaan");
-            Assert(test.n1->c == "chocolade");
+            Assert(test.n1->a.get() == "aap");
+            Assert(test.n1->b.get() == "banaan");
+            Assert(test.n1->c.get() == "chocolade");
         }
 
         {
             Assert(test.n2 != nullptr);
-            Assert(test.n2->banaan == 2);
-            Assert(test.n2->aap == "aap");
+            Assert(test.n2->banaan.get() == 2);
+            Assert(test.n2->aap.get() == "aap");
         }
         Assert(test.foo == 2);
     }
@@ -210,15 +210,15 @@ namespace Configuration {
 
         {
             Assert(test.n1 != nullptr);
-            Assert(test.n1->a == "aap");
-            Assert(test.n1->b == "banaan");
-            Assert(test.n1->c == "chocolade");
+            Assert(test.n1->a.get() == "aap");
+            Assert(test.n1->b.get() == "banaan");
+            Assert(test.n1->c.get() == "chocolade");
         }
 
         {
             Assert(test.n2 != nullptr);
-            Assert(test.n2->banaan == 2);
-            Assert(test.n2->aap == "aap");
+            Assert(test.n2->banaan.get() == 2);
+            Assert(test.n2->aap.get() == "aap");
         }
         Assert(test.foo == 2);
     }

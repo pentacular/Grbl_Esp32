@@ -50,10 +50,10 @@ namespace Spindles {
         _pwm_precision = calc_pwm_precision(_pwm_freq);  // determine the best precision
         _pwm_period    = (1 << _pwm_precision);
 
-        if (_speeds.size() == 0) {
+        if (_speeds.get().size() == 0) {
             // The default speed map for a Laser is linear from 0=0% to 255=100%
-            _speeds.push_back({ 0, 0 });
-            _speeds.push_back({ 255, 100 });
+            _speeds.get().push_back({ 0, 0 });
+            _speeds.get().push_back({ 255, 100 });
         }
 
         setupSpeeds(_laser_full_power);

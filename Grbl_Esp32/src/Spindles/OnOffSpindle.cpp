@@ -16,12 +16,12 @@ namespace Spindles {
 
         is_reversable = _direction_pin.defined();
 
-        if (_speeds.size() == 0) {
+        if (_speeds.get().size() == 0) {
             // The default speed map for an On/Off spindle is off - 0% -
             // for speed 0 and on - 100% - for any nonzero speedl
             // In other words there is a step transition right at 0.
-            _speeds.push_back({ 0, 0 });
-            _speeds.push_back({ 0, 100 });
+            _speeds.get().push_back({ 0, 0 });
+            _speeds.get().push_back({ 0, 100 });
         }
         setupSpeeds(1);
         config_message();

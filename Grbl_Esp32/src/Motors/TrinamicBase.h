@@ -43,20 +43,20 @@ namespace Motors {
         TrinamicMode _mode     = StealthChop;
 
         // Configurable
-        int   _homing_mode = StealthChop;
-        int   _run_mode    = StealthChop;
-        float _r_sense     = 0.11;
-        bool  _use_enable  = false;
+        Setting<int>   _homing_mode = StealthChop;
+        Setting<int>   _run_mode    = StealthChop;
+        Setting<float> _r_sense     = 0.11;
+        Setting<bool>  _use_enable  = false;
 
-        float _run_current         = 0.25;
-        float _hold_current        = 0.25;
-        int   _microsteps          = 256;
-        int   _stallguard          = 0;
-        bool  _stallguardDebugMode = false;
+        Setting<float> _run_current         = 0.25;
+        Setting<float> _hold_current        = 0.25;
+        Setting<int>   _microsteps          = 256;
+        Setting<int>   _stallguard          = 0;
+        Setting<bool>  _stallguardDebugMode = false;
 
-        uint8_t _toff_disable     = 0;
-        uint8_t _toff_stealthchop = 5;
-        uint8_t _toff_coolstep    = 3;
+        Setting<uint8_t> _toff_disable     = 0;
+        Setting<uint8_t> _toff_stealthchop = 5;
+        Setting<uint8_t> _toff_coolstep    = 3;
 
         uint8_t get_next_index();
 

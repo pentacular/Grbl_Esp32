@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Pin.h"
+#include "Configuration/Setting.h"
 
 #include <Arduino.h>  // IRAM_ATTR
 
@@ -19,7 +20,7 @@ public:
         _rtVariable = _value;
     }
 
-    Pin _pin;
+    Setting<Pin> _pin;
 
     void init();
     bool get() { return _value; }

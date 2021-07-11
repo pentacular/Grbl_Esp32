@@ -63,7 +63,7 @@ namespace Configuration {
         leave();
     }
 
-    void JsonGenerator::item(const char* name, bool& value) {
+    void JsonGenerator::item(const char* name, Setting<bool>& value) {
         enter(name);
         const char* val = value ? "Yes" : "No";
         _encoder.begin_webui(name, _currentPath, "B", val);
@@ -79,33 +79,33 @@ namespace Configuration {
         leave();
     }
 
-    void JsonGenerator::item(const char* name, int& value, int32_t minValue, int32_t maxValue) {
+    void JsonGenerator::item(const char* name, Setting<int>& value, int32_t minValue, int32_t maxValue) {
         enter(name);
         char buf[32];
-        itoa(value, buf, 10);
+        itoa(value.get(), buf, 10);
         _encoder.begin_webui(name, _currentPath, "I", buf, minValue, maxValue);
         _encoder.end_object();
         leave();
     }
 
-    void JsonGenerator::item(const char* name, float& value, float minValue, float maxValue) {
-        int n = int(value * 1000);
+    void JsonGenerator::item(const char* name, Setting<float>& value, float minValue, float maxValue) {
+        Setting<int> n = int(value * 1000);
         item(name, n, int(minValue * 1000), int(maxValue * 1000));
     }
 
-    void JsonGenerator::item(const char* name, std::vector<speedEntry>& value) {}
-    void JsonGenerator::item(const char* name, UartData& wordLength, UartParity& parity, UartStop& stopBits) {
+    void JsonGenerator::item(const char* name, Setting<std::vector<speedEntry>>& value) {}
+    void JsonGenerator::item(const char* name, Setting<UartData>& wordLength, Setting<UartParity>& parity, Setting<UartStop>& stopBits) {
         // Not sure if I should comment this out or not. The implementation is similar to the one in Generator.h.
     }
-    void JsonGenerator::item(const char* name, StringRange& value, int minLength, int maxLength) {
+    void JsonGenerator::item(const char* name, Setting<StringRange>& value, int minLength, int maxLength) {
         enter(name);
-        auto sv = value.str();
+        auto sv = value.get().str();
         _encoder.begin_webui(name, _currentPath, "S", sv.c_str(), minLength, maxLength);
         _encoder.end_object();
         leave();
     }
 
-    void JsonGenerator::item(const char* name, Pin& value) {
+    void JsonGenerator::item(const char* name, Setting<Pin>& value) {
         // We commented this out, because pins are very confusing for users. The code is correct,
         // but it really gives more support than it's worth.
         /*
@@ -117,14 +117,14 @@ namespace Configuration {
         */
     }
 
-    void JsonGenerator::item(const char* name, IPAddress& value) {
+    void JsonGenerator::item(const char* name, Setting<IPAddress>& value) {
         enter(name);
-        _encoder.begin_webui(name, _currentPath, "A", value.toString().c_str());
+        _encoder.begin_webui(name, _currentPath, "A", value.get().toString().c_str());
         _encoder.end_object();
         leave();
     }
 
-    void JsonGenerator::item(const char* name, int& value, EnumItem* e) {
+    void JsonGenerator::item(const char* name, Setting<int>& value, EnumItem* e) {
         enter(name);
         const char* str = "unknown";
         for (; e->name; ++e) {

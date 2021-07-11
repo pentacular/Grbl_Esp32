@@ -25,10 +25,10 @@ namespace Machine {
     public:
         Endstops() = default;
 
-        //     Pin  _positive;
-        //     Pin  _negative;
-        Pin  _dual;
-        bool _hardLimits = false;
+        //     Setting<Pin>  _positive;
+        //     Setting<Pin>  _negative;
+        Setting<Pin > _dual;
+        Setting<bool> _hardLimits = false;
 
         // Configuration system helpers:
         void validate() const override;

@@ -28,8 +28,8 @@ namespace Machine {
         static const int n_macros        = 4;
 
     private:
-        String _startup_line[n_startup_lines];
-        String _macro[n_macros];
+        Setting<String> _startup_line[n_startup_lines];
+        Setting<String> _macro[n_macros];
 
     public:
         Macros() = default;

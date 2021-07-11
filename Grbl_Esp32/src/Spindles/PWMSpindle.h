@@ -65,7 +65,7 @@ namespace Spindles {
         uint8_t  _pwm_precision;  // auto calculated
 
         // Configurable
-        uint32_t _pwm_freq = 5000;
+        Setting<uint32_t> _pwm_freq = 5000;
 
         void         set_output(uint32_t duty) override;
         virtual void deinit();

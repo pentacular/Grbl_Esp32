@@ -49,8 +49,8 @@ namespace Spindles {
 
     protected:
         // Configurable
-        uint32_t _min_pulse_us = 900;   // microseconds
-        uint32_t _max_pulse_us = 2200;  // microseconds
+        Setting<uint32_t> _min_pulse_us = 900;   // microseconds
+        Setting<uint32_t> _max_pulse_us = 2200;  // microseconds
 
     public:
         BESC() = default;

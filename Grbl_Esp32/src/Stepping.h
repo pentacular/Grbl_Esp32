@@ -56,12 +56,12 @@ namespace Machine {
 
         Stepping() = default;
 
-        uint8_t  _idleMsecs           = 255;
-        uint32_t _pulseUsecs          = 3;
-        uint32_t _directionDelayUsecs = 0;
-        uint32_t _disableDelayUsecs   = 0;
+        Setting<uint8_t>  _idleMsecs           = 255;
+        Setting<uint32_t> _pulseUsecs          = 3;
+        Setting<uint32_t> _directionDelayUsecs = 0;
+        Setting<uint32_t> _disableDelayUsecs   = 0;
 
-        int _engine = RMT;
+        Setting<int> _engine = RMT;
 
         // Interfaces to stepping engine
         void init();

@@ -56,7 +56,7 @@ void settings_restore(uint8_t restore_flag) {
 
     if (restore_flag & SettingsRestore::Defaults) {
         bool restore_startup = restore_flag & SettingsRestore::StartupLines;
-        for (Setting* s = Setting::List; s; s = s->next()) {
+        for (auto* s = NVSSetting::List; s; s = s->next()) {
             if (!s->getDescription()) {
                 const char* name = s->getName();
                 if (restore_startup) {  // all settings get restored
@@ -78,7 +78,7 @@ void settings_restore(uint8_t restore_flag) {
 
 // Get settings values from non volatile storage into memory
 void load_settings() {
-    for (Setting* s = Setting::List; s; s = s->next()) {
+    for (auto* s = NVSSetting::List; s; s = s->next()) {
         s->load();
     }
     info_serial("Settings loaded from non-volatile storage");
@@ -132,7 +132,7 @@ Error report_gcode(const char* value, WebUI::AuthenticationLevel auth_level, Web
 }
 
 void show_grbl_settings(WebUI::ESPResponseStream* out, type_t type, bool wantAxis) {
-    for (Setting* s = Setting::List; s; s = s->next()) {
+    for (auto* s = NVSSetting::List; s; s = s->next()) {
         if (s->getType() == type && s->getGrblName()) {
             bool isAxis = s->getAxis() != NO_AXIS;
             // The following test could be expressed more succinctly with XOR,
@@ -156,7 +156,7 @@ Error report_extended_settings(const char* value, WebUI::AuthenticationLevel aut
     return Error::Ok;
 }
 Error list_grbl_names(const char* value, WebUI::AuthenticationLevel auth_level, WebUI::ESPResponseStream* out) {
-    for (Setting* s = Setting::List; s; s = s->next()) {
+    for (auto* s = NVSSetting::List; s; s = s->next()) {
         const char* gn = s->getGrblName();
         if (gn) {
             grbl_sendf(out->client(), "$%s => $%s\r\n", gn, s->getName());
@@ -165,7 +165,7 @@ Error list_grbl_names(const char* value, WebUI::AuthenticationLevel auth_level, 
     return Error::Ok;
 }
 Error list_settings(const char* value, WebUI::AuthenticationLevel auth_level, WebUI::ESPResponseStream* out) {
-    for (Setting* s = Setting::List; s; s = s->next()) {
+    for (auto* s = NVSSetting::List; s; s = s->next()) {
         const char* displayValue = auth_failed(s, value, auth_level) ? "<Authentication required>" : s->getStringValue();
         if (s->getType() != PIN) {
             show_setting(s->getName(), displayValue, NULL, out);
@@ -174,7 +174,7 @@ Error list_settings(const char* value, WebUI::AuthenticationLevel auth_level, We
     return Error::Ok;
 }
 Error list_changed_settings(const char* value, WebUI::AuthenticationLevel auth_level, WebUI::ESPResponseStream* out) {
-    for (Setting* s = Setting::List; s; s = s->next()) {
+    for (auto* s = NVSSetting::List; s; s = s->next()) {
         const char* value = s->getStringValue();
         if (!auth_failed(s, value, auth_level) && strcmp(value, s->getDefaultString())) {
             if (s->getType() != PIN) {
@@ -186,7 +186,7 @@ Error list_changed_settings(const char* value, WebUI::AuthenticationLevel auth_l
     return Error::Ok;
 }
 Error list_pins(const char* value, WebUI::AuthenticationLevel auth_level, WebUI::ESPResponseStream* out) {
-    for (Setting* s = Setting::List; s; s = s->next()) {
+    for (auto* s = NVSSetting::List; s; s = s->next()) {
         const char* displayValue = auth_failed(s, value, auth_level) ? "<Authentication required>" : s->getStringValue();
         if (s->getType() == PIN) {
             show_setting(s->getName(), displayValue, NULL, out);
@@ -195,7 +195,7 @@ Error list_pins(const char* value, WebUI::AuthenticationLevel auth_level, WebUI:
     return Error::Ok;
 }
 Error list_changed_pins(const char* value, WebUI::AuthenticationLevel auth_level, WebUI::ESPResponseStream* out) {
-    for (Setting* s = Setting::List; s; s = s->next()) {
+    for (auto* s = NVSSetting::List; s; s = s->next()) {
         const char* value = s->getStringValue();
         if (s->getType() == PIN && strcmp(value, "")) {  // Not undefined pin
             show_setting(s->getName(), value, NULL, out);
@@ -500,8 +500,8 @@ void make_grbl_commands() {
     new GrblCommand("G", "GCode/Modes", report_gcode, anyState);
     new GrblCommand("C", "GCode/Check", toggle_check_mode, anyState);
     new GrblCommand("X", "Alarm/Disable", disable_alarm_lock, anyState);
-    new GrblCommand("NVX", "Settings/Erase", Setting::eraseNVS, idleOrAlarm, WA);
-    new GrblCommand("V", "Settings/Stats", Setting::report_nvs_stats, idleOrAlarm);
+    new GrblCommand("NVX", "Settings/Erase", NVSSetting::eraseNVS, idleOrAlarm, WA);
+    new GrblCommand("V", "Settings/Stats", NVSSetting::report_nvs_stats, idleOrAlarm);
     new GrblCommand("#", "GCode/Offsets", report_ngc, idleOrAlarm);
     new GrblCommand("H", "Home", home_all, idleOrAlarm);
     new GrblCommand("MD", "Motor/Disable", motor_disable, idleOrAlarm);
@@ -592,7 +592,7 @@ Error do_command_or_setting(const char* key, char* value, WebUI::AuthenticationL
 
     // Next search the settings list by text name. If found, set a new
     // value if one is given, otherwise display the current value
-    for (Setting* s = Setting::List; s; s = s->next()) {
+    for (auto* s = NVSSetting::List; s; s = s->next()) {
         if (strcasecmp(s->getName(), key) == 0) {
             if (auth_failed(s, value, auth_level)) {
                 return Error::AuthenticationFailed;
@@ -608,7 +608,7 @@ Error do_command_or_setting(const char* key, char* value, WebUI::AuthenticationL
 
     // Then search the setting list by compatible name.  If found, set a new
     // value if one is given, otherwise display the current value in compatible mode
-    for (Setting* s = Setting::List; s; s = s->next()) {
+    for (auto* s = NVSSetting::List; s; s = s->next()) {
         if (s->getGrblName() && strcasecmp(s->getGrblName(), key) == 0) {
             if (auth_failed(s, value, auth_level)) {
                 return Error::AuthenticationFailed;
@@ -642,7 +642,7 @@ Error do_command_or_setting(const char* key, char* value, WebUI::AuthenticationL
         auto lcKey = String(key);
         lcKey.toLowerCase();
         bool found = false;
-        for (Setting* s = Setting::List; s; s = s->next()) {
+        for (auto* s = NVSSetting::List; s; s = s->next()) {
             auto lcTest = String(s->getName());
             lcTest.toLowerCase();
 

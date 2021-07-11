@@ -114,56 +114,56 @@ namespace Configuration {
     public:
         ParserHandler(Configuration::Parser& parser) : _parser(parser) {}
 
-        void item(const char* name, int32_t& value, int32_t minValue, int32_t maxValue) override {
+        void item(const char* name, Setting<int32_t>& value, int32_t minValue, int32_t maxValue) override {
             if (_parser.is(name)) {
                 value = _parser.intValue();
             }
         }
 
-        void item(const char* name, int& value, EnumItem* e) override {
+        void item(const char* name, Setting<int>& value, EnumItem* e) override {
             if (_parser.is(name)) {
                 value = _parser.enumValue(e);
             }
         }
 
-        void item(const char* name, bool& value) override {
+        void item(const char* name, Setting<bool>& value) override {
             if (_parser.is(name)) {
                 value = _parser.boolValue();
             }
         }
 
-        void item(const char* name, float& value, float minValue, float maxValue) override {
+        void item(const char* name, Setting<float>& value, float minValue, float maxValue) override {
             if (_parser.is(name)) {
                 value = _parser.floatValue();
             }
         }
 
-        void item(const char* name, std::vector<speedEntry>& value) override {
+        void item(const char* name, Setting<std::vector<speedEntry>>& value) override {
             if (_parser.is(name)) {
                 value = _parser.speedEntryValue();
             }
         }
 
-        void item(const char* name, UartData& wordLength, UartParity& parity, UartStop& stopBits) override {
+        void item(const char* name, Setting<UartData>& wordLength, Setting<UartParity>& parity, Setting<UartStop>& stopBits) override {
             if (_parser.is(name)) {
-                _parser.uartMode(wordLength, parity, stopBits);
+                _parser.uartMode(wordLength.get(), parity.get(), stopBits.get());
             }
         }
 
-        void item(const char* name, StringRange& value, int minLength, int maxLength) override {
+        void item(const char* name, Setting<StringRange>& value, int minLength, int maxLength) override {
             if (_parser.is(name)) {
                 value = _parser.stringValue();
             }
         }
 
-        void item(const char* name, Pin& value) override {
+        void item(const char* name, Setting<Pin>& value) override {
             if (_parser.is(name)) {
                 auto parsed = _parser.pinValue();
-                value.swap(parsed);
+                value.get().swap(parsed);
             }
         }
 
-        void item(const char* name, IPAddress& value) override {
+        void item(const char* name, Setting<IPAddress>& value) override {
             if (_parser.is(name)) {
                 value = _parser.ipValue();
             }

@@ -21,10 +21,10 @@
 
 namespace Motors {
     class StepStick : public StandardStepper {
-        Pin _MS1;
-        Pin _MS2;
-        Pin _MS3;
-        Pin _Reset;
+        Setting< Pin> _MS1;
+        Setting< Pin> _MS2;
+        Setting< Pin> _MS3;
+        Setting< Pin> _Reset;
 
     public:
         StepStick() = default;

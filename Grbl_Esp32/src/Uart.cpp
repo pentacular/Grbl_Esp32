@@ -148,5 +148,5 @@ void uartInit() {
 }
 
 void Uart::config_message() {
-    info_serial("Uart on Tx:%s Rx:%s RTS:%s baudrate %d", _txd_pin.name().c_str(), _rxd_pin.name().c_str(), _rts_pin.name().c_str(), baud);
+    info_serial("Uart on Tx:%s Rx:%s RTS:%s baudrate %d", _txd_pin.name().c_str(), _rxd_pin.name().c_str(), _rts_pin.name().c_str(), baud.get());
 }

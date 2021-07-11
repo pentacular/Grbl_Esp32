@@ -294,9 +294,9 @@ namespace WebUI {
         }
 
         //Get parameters for STA
-        WiFi.setHostname(comms->_hostname.c_str());
+        WiFi.setHostname(comms->_hostname.get().c_str());
 
-        String& SSID = sta->_ssid;
+        String& SSID = sta->_ssid.get();
         if (SSID.length() == 0) {
             SSID = DEFAULT_STA_SSID;
         }
@@ -310,15 +310,15 @@ namespace WebUI {
             WiFi.config(sta->_ipAddress, sta->_netmask, sta->_gateway);
             info_all("STA SSID %s static IP %s netmask %s gateway %s",
                      SSID.c_str(),
-                     sta->_ipAddress.toString().c_str(),
-                     sta->_netmask.toString().c_str(),
-                     sta->_gateway.toString().c_str());
+                     sta->_ipAddress.get().toString().c_str(),
+                     sta->_netmask.get().toString().c_str(),
+                     sta->_gateway.get().toString().c_str());
         }
 
         if (WiFi.begin(SSID.c_str(), (password.length() > 0) ? password.c_str() : NULL)) {
             return ConnectSTA2AP();
         }
-        info_serial("Cannot connect to %s", config->_comms->_staConfig->_ssid.c_str());
+        info_serial("Cannot connect to %s", config->_comms->_staConfig->_ssid.get().c_str());
         return false;
     }
 
@@ -348,7 +348,7 @@ namespace WebUI {
 
         //Get parameters for AP
         //SSID
-        String& SSID = ap->_ssid;
+        String& SSID = ap->_ssid.get();
         if (SSID.length() == 0) {
             SSID = DEFAULT_AP_SSID;
         }
@@ -444,7 +444,7 @@ namespace WebUI {
         bool error = false;
         // XXX this is probably wrong for YAML land.
         // We might want this function to go away.
-        for (Setting* s = Setting::List; s; s = s->next()) {
+        for (NVSSetting* s = NVSSetting::List; s; s = s->next()) {
             if (s->getDescription()) {
                 s->setDefault();
             }

@@ -42,7 +42,7 @@ namespace Motors {
 
         TickType_t       xLastWakeTime;
         const TickType_t xreadSg = 200;  // in ticks (typically ms)
-        auto             n_axis  = config->_axes->_numberAxis;
+        int32_t          n_axis  = config->_axes->_numberAxis;
 
         xLastWakeTime = xTaskGetTickCount();  // Initialise the xLastWakeTime variable with the current time.
         while (true) {                        // don't ever return from this or the task dies

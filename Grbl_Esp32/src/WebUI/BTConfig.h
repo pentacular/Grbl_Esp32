@@ -66,8 +66,8 @@ namespace WebUI {
     private:
         static BTConfig* instance;  // BT Callback does not support passing parameters. Sigh.
 
-        String _btclient = "";
-        String _btname   = "btgrblesp";
+        Setting<String> _btclient = "";
+        Setting<String> _btname   = "btgrblesp";
         char   _deviceAddrBuffer[18];
 
         static const int MAX_BTNAME_LENGTH = 32;
@@ -80,8 +80,8 @@ namespace WebUI {
         BTConfig();
 
         void validate() const override {
-            Assert(_btname.length() > 0, "Bluetooth must have a name if it's configured");
-            Assert(_btname.length() >= MIN_BTNAME_LENGTH && _btname.length() <= MAX_BTNAME_LENGTH,
+            Assert(_btname.get().length() > 0, "Bluetooth must have a name if it's configured");
+            Assert(_btname.get().length() >= MIN_BTNAME_LENGTH && _btname.get().length() <= MAX_BTNAME_LENGTH,
                    "Bluetooth name must be between %d and %d characters long",
                    MIN_BTNAME_LENGTH,
                    MAX_BTNAME_LENGTH);

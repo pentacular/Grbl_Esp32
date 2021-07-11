@@ -82,8 +82,8 @@ namespace Spindles {
         virtual bool            safety_polling() const { return true; }
 
         // The constructor sets these
-        Uart*   _uart      = nullptr;
-        uint8_t _modbus_id = 1;
+        Uart*            _uart      = nullptr;
+        Setting<uint8_t> _modbus_id = 1;
 
         void setSpeed(uint32_t dev_speed);
 

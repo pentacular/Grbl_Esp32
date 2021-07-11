@@ -25,9 +25,9 @@ namespace Machine {
     public:
         UserOutputs();
 
-        Pin _analogOutput[4];
-        int _analogFrequency[4];
-        Pin _digitalOutput[4];
+        Setting<Pin> _analogOutput[4];
+        Setting<int> _analogFrequency[4];
+        Setting<Pin> _digitalOutput[4];
 
         void group(Configuration::HandlerBase& handler) override;
 

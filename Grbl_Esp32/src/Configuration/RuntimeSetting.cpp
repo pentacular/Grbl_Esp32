@@ -52,57 +52,57 @@ namespace Configuration {
         }
     }
 
-    void RuntimeSetting::item(const char* name, bool& value) {
+    void RuntimeSetting::item(const char* name, Setting<bool>& value) {
         if (is(name)) {
             isHandled_ = true;
             if (newValue_ == nullptr) {
                 grbl_sendf(out_->client(), "$%s=%s\r\n", setting_, value ? "true" : "false");
             } else {
-                value = (!strcasecmp(newValue_, "true"));
+                value.get() = (!strcasecmp(newValue_, "true"));
             }
         }
     }
 
-    void RuntimeSetting::item(const char* name, int32_t& value, int32_t minValue, int32_t maxValue) {
+    void RuntimeSetting::item(const char* name, Setting<int32_t>& value, int32_t minValue, int32_t maxValue) {
         if (is(name)) {
             isHandled_ = true;
             if (newValue_ == nullptr) {
-                grbl_sendf(out_->client(), "$%s=%d\r\n", setting_, value);
+                grbl_sendf(out_->client(), "$%s=%d\r\n", setting_, value.get());
             } else {
-                value = atoi(newValue_);
+                value.get() = atoi(newValue_);
             }
         }
     }
 
-    void RuntimeSetting::item(const char* name, float& value, float minValue, float maxValue) {
+    void RuntimeSetting::item(const char* name, Setting<float>& value, float minValue, float maxValue) {
         if (is(name)) {
             isHandled_ = true;
             if (newValue_ == nullptr) {
-                grbl_sendf(out_->client(), "$%s=%.3f\r\n", setting_, value);
+                grbl_sendf(out_->client(), "$%s=%.3f\r\n", setting_, value.get());
             } else {
                 char* floatEnd;
-                value = strtof(newValue_, &floatEnd);
+                value.get() = strtof(newValue_, &floatEnd);
             }
         }
     }
 
-    void RuntimeSetting::item(const char* name, StringRange& value, int minLength, int maxLength) {
+    void RuntimeSetting::item(const char* name, Setting<StringRange>& value, int minLength, int maxLength) {
         if (is(name)) {
             isHandled_ = true;
             if (newValue_ == nullptr) {
-                grbl_sendf(out_->client(), "$%s=%s\r\n", setting_, value.str().c_str());
+                grbl_sendf(out_->client(), "$%s=%s\r\n", setting_, value.get().str().c_str());
             } else {
-                value = StringRange(newValue_);
+                value.get() = StringRange(newValue_);
             }
         }
     }
 
-    void RuntimeSetting::item(const char* name, int& value, EnumItem* e) {
+    void RuntimeSetting::item(const char* name, Setting<int>& value, EnumItem* e) {
         if (is(name)) {
             isHandled_ = true;
             if (newValue_ == nullptr) {
                 for (; e->name; ++e) {
-                    if (e->value == value) {
+                    if (e->value == value.get()) {
                         grbl_sendf(out_->client(), "$%s=%s\r\n", setting_, e->name);
                         return;
                     }
@@ -110,13 +110,13 @@ namespace Configuration {
             } else {
                 for (; e->name; ++e) {
                     if (!strcasecmp(newValue_, e->name)) {
-                        value = e->value;
+                        value.get() = e->value;
                         return;
                     }
                 }
 
                 if (strlen(newValue_) == 0) {
-                    value = e->value;
+                    value.get() = e->value;
                     return;
                 } else {
                     Assert(false, "Provided enum value %s is not valid", newValue_);
@@ -125,22 +125,22 @@ namespace Configuration {
         }
     }
 
-    void RuntimeSetting::item(const char* name, IPAddress& value) {
+    void RuntimeSetting::item(const char* name, Setting<IPAddress>& value) {
         if (is(name)) {
             isHandled_ = true;
             if (newValue_ == nullptr) {
-                grbl_sendf(out_->client(), "$%s=%s\r\n", setting_, value.toString().c_str());
+                grbl_sendf(out_->client(), "$%s=%s\r\n", setting_, value.get().toString().c_str());
             } else {
                 IPAddress ip;
                 if (!ip.fromString(newValue_)) {
                     Assert(false, "Expected an IP address like 192.168.0.100");
                 }
-                value = ip;
+                value.get() = ip;
             }
         }
     }
 
-    void RuntimeSetting::item(const char* name, Pin& value) {
+    void RuntimeSetting::item(const char* name, Setting<Pin>& value) {
         /*
         Runtime settings of PIN objects is NOT supported!
 

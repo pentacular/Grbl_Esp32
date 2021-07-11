@@ -39,11 +39,12 @@ class Probe : public Configuration::Configurable {
     bool _isProbeAway = false;
 
     // Configurable
-    Pin _probePin;
+    Setting<Pin> _probePin;
 
 public:
     // Configurable
-    bool _check_mode_start = true;
+    Setting<bool> _check_mode_start = true;
+
     // _check_mode_start configures the position after a probing cycle
     // during check mode. false sets the position to the probe target,
     // true sets the position to the start position.

@@ -28,10 +28,10 @@
 #include "GCode.h"  // CoolantState
 
 class CoolantControl : public Configuration::Configurable {
-    Pin _mist;
-    Pin _flood;
+    Setting<Pin> _mist;
+    Setting<Pin> _flood;
 
-    uint32_t _delay_ms = 0;
+    Setting<uint32_t> _delay_ms = 0;
 
     void write(CoolantState state);
 

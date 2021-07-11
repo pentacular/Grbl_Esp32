@@ -96,12 +96,12 @@ public:
     virtual Error action(char* value, WebUI::AuthenticationLevel auth_level, WebUI::ESPResponseStream* out) = 0;
 };
 
-class Setting : public Word {
+class NVSSetting : public Word {
 private:
 protected:
     // group_t _group;
     axis_t   _axis = NO_AXIS;
-    Setting* link;  // linked list of setting objects
+    NVSSetting* link;  // linked list of setting objects
 
     bool (*_checker)(char*);
     const char* _keyName;
@@ -109,8 +109,8 @@ protected:
 public:
     static nvs_handle _handle;
     static void       init();
-    static Setting*   List;
-    Setting*          next() { return link; }
+    static NVSSetting* List;
+    NVSSetting*        next() { return link; }
 
     Error check(char* s);
 
@@ -137,9 +137,10 @@ public:
         return Error::Ok;
     }
 
-    ~Setting() {}
+    ~NVSSetting() {}
     // Setting(const char *description, group_t group, const char * grblName, const char* fullName, bool (*checker)(char *));
-    Setting(const char* description, type_t type, permissions_t permissions, const char* grblName, const char* fullName, bool (*checker)(char*));
+    NVSSetting(
+        const char* description, type_t type, permissions_t permissions, const char* grblName, const char* fullName, bool (*checker)(char*));
     axis_t getAxis() { return _axis; }
     void   setAxis(axis_t axis) { _axis = axis; }
 
@@ -160,7 +161,7 @@ public:
     virtual const char* getDefaultString() = 0;
 };
 
-class IntSetting : public Setting {
+class IntSetting : public NVSSetting {
 private:
     int32_t _defaultValue;
     int32_t _currentValue;
@@ -227,7 +228,7 @@ public:
 
 extern Coordinates* coords[CoordIndex::End];
 
-class StringSetting : public Setting {
+class StringSetting : public NVSSetting {
 private:
     String _defaultValue;
     String _currentValue;
@@ -265,7 +266,7 @@ struct cmp_str {
 };
 typedef std::map<const char*, int8_t, cmp_str> enum_opt_t;
 
-class EnumSetting : public Setting {
+class EnumSetting : public NVSSetting {
 private:
     int8_t                                  _defaultValue;
     int8_t                                  _storedValue;

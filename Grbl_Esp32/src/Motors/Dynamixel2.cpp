@@ -322,7 +322,7 @@ namespace Motors {
         tx_message[++msg_index] = 4;                                  // low order data length
         tx_message[++msg_index] = 0;                                  // high order data length
 
-        auto   n_axis = config->_axes->_numberAxis;
+        int32_t n_axis = config->_axes->_numberAxis;
         float* mpos   = system_get_mpos();
         for (uint8_t axis = X_AXIS; axis < n_axis; axis++) {
             for (uint8_t gang_index = 0; gang_index < 2; gang_index++) {

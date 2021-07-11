@@ -204,7 +204,7 @@ static void report_util_axis_values(float* axis_value, char* rpt) {
         unit_conv = 1.0f / MM_PER_INCH;
         format    = "%4.4f";  // Report inches to 4 decimal places
     }
-    auto n_axis = config->_axes->_numberAxis;
+    int32_t n_axis = config->_axes->_numberAxis;
     for (idx = 0; idx < n_axis; idx++) {
         snprintf(axisVal, coordStringLen - 1, format, axis_value[idx] * unit_conv);
         strcat(rpt, axisVal);
@@ -224,7 +224,7 @@ static String report_util_axis_values(const float* axis_value) {
         unit_conv = 1.0f / MM_PER_INCH;
         decimals  = 4;  // Report inches to 4 decimal places
     }
-    auto n_axis = config->_axes->_numberAxis;
+    int32_t n_axis = config->_axes->_numberAxis;
     for (idx = 0; idx < n_axis; idx++) {
         rpt += String(axis_value[idx] * unit_conv, decimals);
         if (idx < (config->_axes->_numberAxis - 1)) {
@@ -686,7 +686,7 @@ void report_realtime_status(uint8_t client) {
         addPinReport(status, 'P');
     }
     if (lim_pin_state) {
-        auto n_axis = config->_axes->_numberAxis;
+        int32_t n_axis = config->_axes->_numberAxis;
         for (int i = 0; i < n_axis; i++) {
             if (bit_istrue(lim_pin_state, bit(i))) {
                 addPinReport(status, config->_axes->axisName(i));
@@ -789,7 +789,7 @@ void report_realtime_status(uint8_t client) {
 
 void report_realtime_steps() {
     uint8_t idx;
-    auto    n_axis = config->_axes->_numberAxis;
+    int32_t n_axis = config->_axes->_numberAxis;
     for (idx = 0; idx < n_axis; idx++) {
         grbl_sendf(CLIENT_ALL, "%ld\n", sys_position[idx]);  // OK to send to all ... debug stuff
     }
@@ -810,7 +810,7 @@ void report_gcode_comment(char* comment) {
 }
 
 void report_machine_type(uint8_t client) {
-    info_client(client, "Machine: %s", config->_name.c_str());
+    info_client(client, "Machine: %s", config->_name.get().c_str());
 }
 
 /*
@@ -921,7 +921,7 @@ void reportTaskStackSize(UBaseType_t& saved) {
 
 void mpos_to_wpos(float* position) {
     float* wco    = get_wco();
-    auto   n_axis = config->_axes->_numberAxis;
+    int32_t n_axis = config->_axes->_numberAxis;
     for (int idx = 0; idx < n_axis; idx++) {
         position[idx] -= wco[idx];
     }
@@ -929,7 +929,7 @@ void mpos_to_wpos(float* position) {
 
 float* get_wco() {
     static float wco[MAX_N_AXIS];
-    auto         n_axis = config->_axes->_numberAxis;
+    int32_t      n_axis = config->_axes->_numberAxis;
     for (int idx = 0; idx < n_axis; idx++) {
         // Apply work coordinate offsets and tool length offset to current position.
         wco[idx] = gc_state.coord_system[idx] + gc_state.coord_offset[idx];

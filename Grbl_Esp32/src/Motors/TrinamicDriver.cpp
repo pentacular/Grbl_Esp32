@@ -114,7 +114,7 @@ namespace Motors {
                     _cs_pin.name().c_str(),
                     _disable_pin.name().c_str(),
                     _spi_index,
-                    _r_sense,
+                    _r_sense.get(),
                     reportAxisLimitsMsg(axis_index()));
     }
 
@@ -230,7 +230,7 @@ namespace Motors {
             case TrinamicMode ::StallGuard:
                 //info_serial("Stallguard");
                 {
-                    auto feedrate = config->_axes->_axis[axis_index()]->_homing->_feedRate;
+                    float feedrate = config->_axes->_axis[axis_index()]->_homing->_feedRate;
 
                     tmcstepper->en_pwm_mode(false);
                     tmcstepper->pwm_autoscale(false);
@@ -238,7 +238,7 @@ namespace Motors {
                     tmcstepper->THIGH(calc_tstep(feedrate, 60.0));
                     tmcstepper->sfilt(1);
                     tmcstepper->diag1_stall(true);  // stallguard i/o is on diag1
-                    tmcstepper->sgt(constrain(_stallguard, -64, 63));
+                    tmcstepper->sgt(constrain(_stallguard.get(), -64, 63));
                     break;
                 }
         }
@@ -264,7 +264,7 @@ namespace Motors {
                     tmcstepper->stallguard(),
                     tmcstepper->sg_result(),
                     feedrate,
-                    constrain(_stallguard, -64, 63));
+                    constrain(_stallguard.get(), -64, 63));
 
         // The bit locations differ somewhat between different chips.
         // The layout is very different between 2130 and 2208

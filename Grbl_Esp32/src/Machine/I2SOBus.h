@@ -25,9 +25,9 @@ namespace Machine {
     public:
         I2SOBus() = default;
 
-        Pin _bck;
-        Pin _data;
-        Pin _ws;
+        Setting<Pin> _bck;
+        Setting<Pin> _data;
+        Setting<Pin> _ws;
 
         void validate() const override;
         void group(Configuration::HandlerBase& handler) override;

@@ -55,24 +55,25 @@ namespace Configuration {
     public:
         Generator(SimpleOutputStream& dst);
 
-        void item(const char* name, int& value, int32_t minValue, int32_t maxValue) override {
+        void item(const char* name, Setting<int>& value, int32_t minValue, int32_t maxValue) override {
             indent();
             dst_ << name << ": " << value << '\n';
         }
 
-        void item(const char* name, float& value, float minValue, float maxValue) override {
+        void item(const char* name, Setting<float>& value, float minValue, float maxValue) override {
             indent();
             dst_ << name << ": " << value << '\n';
         }
 
-        void item(const char* name, std::vector<speedEntry>& value) {
+        void item(const char* name, Setting<std::vector<speedEntry>>& value) {
             indent();
             dst_ << name << ": ";
-            if (value.size() == 0) {
+            const std::vector<speedEntry>& vec = value;
+            if (vec.size() == 0) {
                 dst_ << "None";
             } else {
                 const char* separator = "";
-                for (speedEntry n : value) {
+                for (speedEntry n : vec) {
                     dst_ << separator << n.speed << '=' << n.percent << '%';
                     separator = " ";
                 }
@@ -80,9 +81,11 @@ namespace Configuration {
             dst_ << '\n';
         }
 
-        void item(const char* name, UartData& wordLength, UartParity& parity, UartStop& stopBits) override {
+        void item(const char* name, Setting<UartData>& wordLength, Setting<UartParity>& parity, Setting<UartStop>& stopBits) override {
             indent();
-            dst_ << name << ": " << (int(wordLength) - int(UartData::Bits5) + 5);
+
+            UartData wl = wordLength;
+            dst_ << name << ": " << (int(wl) - int(UartData::Bits5) + 5);
             switch (parity) {
                 case UartParity::Even:
                     dst_ << 'E';
@@ -108,26 +111,27 @@ namespace Configuration {
             dst_ << '\n';
         }
 
-        void item(const char* name, StringRange& value, int minLength, int maxLength) override {
+        void item(const char* name, Setting<StringRange>& value, int minLength, int maxLength) override {
             indent();
             dst_ << name << ": " << value << '\n';
         }
 
-        void item(const char* name, bool& value) override {
+        void item(const char* name, Setting<bool>& value) override {
             indent();
             const char* bval = value ? "true" : "false";
             dst_ << name << ": " << bval << '\n';
         }
 
-        void item(const char* name, Pin& value) override {
+        void item(const char* name, Setting<Pin>& value) override {
             indent();
             dst_ << name << ": " << value << '\n';
         }
-        void item(const char* name, IPAddress& value) override {
+        void item(const char* name, Setting<IPAddress>& value) override {
             indent();
-            dst_ << name << ": " << value.toString() << '\n';
+            const IPAddress& ip = value;
+            dst_ << name << ": " << ip.toString() << '\n';
         }
-        void item(const char* name, int& value, EnumItem* e) override {
+        void item(const char* name, Setting<int>& value, EnumItem* e) override {
             indent();
             const char* str = "unknown";
             for (; e->name; ++e) {

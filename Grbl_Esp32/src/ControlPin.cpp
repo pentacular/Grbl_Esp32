@@ -19,7 +19,7 @@ void ControlPin::init() {
         attr = attr | Pin::Attr::PullUp;
     }
     _pin.setAttr(attr);
-    _pin.attachInterrupt<ControlPin, &ControlPin::handleISR>(this, CHANGE);
+    _pin.get().attachInterrupt<ControlPin, &ControlPin::handleISR>(this, CHANGE);
 }
 
 void ControlPin::report(char* status) {
@@ -29,5 +29,5 @@ void ControlPin::report(char* status) {
 }
 
 ControlPin::~ControlPin() {
-    _pin.detachInterrupt();
+    _pin.get().detachInterrupt();
 }

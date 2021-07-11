@@ -40,7 +40,7 @@ namespace Motors {
         const int _spi_freq = 100000;
 
         TMC2130Stepper* tmcstepper;  // all other driver types are subclasses of this one
-        Pin             _cs_pin;     // The chip select pin (can be the same for daisy chain)
+        Setting<Pin>    _cs_pin;     // The chip select pin (can be the same for daisy chain)
         PinMapper       _cs_mapping;
         int8_t          _spi_index;
 

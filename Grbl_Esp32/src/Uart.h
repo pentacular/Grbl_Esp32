@@ -37,15 +37,15 @@ public:
     // E.g. some uses require an RTS pin.
 
     // Configurable.  Uart0 uses a fixed configuration
-    int        baud     = 115200;
-    UartData   dataBits = UartData::Bits8;
-    UartParity parity   = UartParity::None;
-    UartStop   stopBits = UartStop::Bits1;
+    Setting<int>        baud     = 115200;
+    Setting<UartData>   dataBits = UartData::Bits8;
+    Setting<UartParity> parity   = UartParity::None;
+    Setting<UartStop>   stopBits = UartStop::Bits1;
 
-    Pin _txd_pin;
-    Pin _rxd_pin;
-    Pin _rts_pin;
-    Pin _cts_pin;
+    Setting<Pin> _txd_pin;
+    Setting<Pin> _rxd_pin;
+    Setting<Pin> _rts_pin;
+    Setting<Pin> _cts_pin;
 
     Uart();
     Uart(int uart_num);

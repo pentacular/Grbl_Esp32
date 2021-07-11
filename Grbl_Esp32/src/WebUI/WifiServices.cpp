@@ -53,7 +53,7 @@ namespace WebUI {
             return false;
         }
 
-        String& h = config->_comms->_hostname;
+        String& h = config->_comms->_hostname.get();
 
         ArduinoOTA
             .onStart([]() {

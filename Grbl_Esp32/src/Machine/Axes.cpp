@@ -16,7 +16,7 @@ namespace Machine {
     }
 
     void Axes::init() {
-        info_serial("Axis count %d", config->_axes->_numberAxis);
+        info_serial("Axis count %d", config->_axes->_numberAxis.get());
 
         if (_sharedStepperDisable.defined()) {
             _sharedStepperDisable.setAttr(Pin::Attr::Output);
@@ -109,7 +109,7 @@ namespace Machine {
     }
 
     void IRAM_ATTR Axes::step(uint8_t step_mask, uint8_t dir_mask) {
-        auto n_axis = _numberAxis;
+        int32_t n_axis = _numberAxis;
         //info_serial("motors_set_direction_pins:0x%02X", onMask);
 
         // Set the direction pins, but optimize for the common
@@ -152,7 +152,7 @@ namespace Machine {
     // Turn all stepper pins off
     void IRAM_ATTR Axes::unstep() {
         config->_stepping->waitPulse();
-        auto n_axis = _numberAxis;
+        int32_t n_axis = _numberAxis;
         for (uint8_t axis = X_AXIS; axis < n_axis; axis++) {
             for (uint8_t gang_index = 0; gang_index < Axis::MAX_NUMBER_GANGED; gang_index++) {
                 auto a = _axis[axis]->_gangs[gang_index]->_motor;

@@ -332,7 +332,7 @@ namespace Spindles {
         if (_minFrequency > _maxFrequency) {
             _minFrequency = _maxFrequency;
         }
-        if (_speeds.size() == 0) {
+        if (_speeds.get().size() == 0) {
             // Convert from Frequency in centiHz (the divisor of 100) to RPM (the factor of 60)
             SpindleSpeed minRPM = _minFrequency * 60 / 100;
             SpindleSpeed maxRPM = _maxFrequency * 60 / 100;

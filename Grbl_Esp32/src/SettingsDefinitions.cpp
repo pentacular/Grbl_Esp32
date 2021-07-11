@@ -31,7 +31,7 @@ void make_coordinate(CoordIndex index, const char* name) {
 }
 
 void make_settings() {
-    Setting::init();
+    NVSSetting::init();
 
     // Propagate old coordinate system data to the new format if necessary.
     // G54 - G59 work coordinate systems, G28, G30 reference positions, etc

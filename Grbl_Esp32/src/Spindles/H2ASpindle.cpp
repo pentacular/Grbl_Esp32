@@ -74,7 +74,7 @@ namespace Spindles {
             return [](const uint8_t* response, Spindles::VFD* vfd) -> bool {
                 uint16_t maxRPM = (uint16_t(response[4]) << 8) | uint16_t(response[5]);
 
-                if (vfd->_speeds.size() == 0) {
+                if (vfd->_speeds.get().size() == 0) {
                     vfd->shelfSpeeds(maxRPM / 4, maxRPM);
                 }
 

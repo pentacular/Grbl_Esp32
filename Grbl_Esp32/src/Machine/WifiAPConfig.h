@@ -26,11 +26,11 @@ namespace Machine {
     public:
         WifiAPConfig() = default;
 
-        int _channel = 1;
+        Setting<int> _channel = 1;
 
         void validate() const override {
             WifiConfig::validate();
-            Assert(_channel >= 1 && _channel <= 16, "WIFI channel %d is out of bounds", _channel);  // TODO: I guess?
+            Assert(_channel.get() >= 1 && _channel.get() <= 16, "WIFI channel %d is out of bounds", _channel.get());  // TODO: I guess?
         }
 
         void group(Configuration::HandlerBase& handler) override {

@@ -28,7 +28,7 @@ namespace Motors {
 
         void set_location();
 
-        Pin      _pwm_pin;
+        Setting < Pin> _pwm_pin;
         uint8_t  _channel_num;
         uint32_t _current_pwm_duty;
         float    _homing_position;
@@ -39,8 +39,8 @@ namespace Motors {
 
         bool _disabled;
 
-        float _cal_min;
-        float _cal_max;
+        Setting<float> _cal_min;
+        Setting<float> _cal_max;
 
         int _axis_index = -1;
 

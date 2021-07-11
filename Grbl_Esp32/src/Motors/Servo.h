@@ -28,7 +28,7 @@
 namespace Motors {
     class Servo : public Motor {
     public:
-        int _timer_ms = 75;
+        Setting < int> _timer_ms = 75;
 
         Servo();
 #if 0
