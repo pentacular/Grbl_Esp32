@@ -65,7 +65,7 @@ Error add_char_to_line(char c, uint8_t client) {
         return Error::Ok;
     }
     if (cl->len == (LINE_BUFFER_SIZE - 1)) {
-        grbl_send(CLIENT_ALL, "QQ/add_char_to_line/overflow\r\n");
+        grbl_sendf(CLIENT_ALL, "QQ/add_char_to_line/overflow <%s>\r\n", cl->buffer);
         return Error::Overflow;
     }
     if (c == '\r' || c == '\n') {

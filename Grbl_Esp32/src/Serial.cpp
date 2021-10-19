@@ -138,13 +138,13 @@ static uint8_t getClientChar(uint8_t* data) {
         *data = res;
         return CLIENT_SERIAL;
     }
-    if (WebUI::inputBuffer.available()) {
+    if (client_buffer[CLIENT_INPUT].availableforwrite() && WebUI::inputBuffer.available()) {
         *data = WebUI::inputBuffer.read();
         return CLIENT_INPUT;
     }
     //currently is wifi or BT but better to prepare both can be live
 #ifdef ENABLE_BLUETOOTH
-    if (WebUI::SerialBT.hasClient()) {
+    if (client_buffer[CLIENT_BT].availableforwrite() && WebUI::SerialBT.hasClient()) {
         if ((res = WebUI::SerialBT.read()) != -1) {
             *data = res;
             return CLIENT_BT;
@@ -152,17 +152,14 @@ static uint8_t getClientChar(uint8_t* data) {
     }
 #endif
 #if defined(ENABLE_WIFI) && defined(ENABLE_HTTP) && defined(ENABLE_SERIAL2SOCKET_IN)
-    if (WebUI::Serial2Socket.available()) {
+    if (client_buffer[CLIENT_WEBUI].availableforwrite() && WebUI::Serial2Socket.available()) {
         *data = WebUI::Serial2Socket.read();
         return CLIENT_WEBUI;
     }
 #endif
 #if defined(ENABLE_WIFI) && defined(ENABLE_TELNET)
-    if (WebUI::telnet_server.available()) {
+    if (client_buffer[CLIENT_TELNET].availableforwrite() && WebUI::telnet_server.available()) {
         *data = WebUI::telnet_server.read();
-        // char buf[4] = "[ ]";
-        // buf[1] = *data;
-        // grbl_send(CLIENT_ALL, buf);
         return CLIENT_TELNET;
     }
 #endif
@@ -186,8 +183,12 @@ void clientCheckTask(void* pvParameters) {
                 if (get_sd_state(false) < SDState::Busy) {
 #endif  //ENABLE_SD_CARD
                     vTaskEnterCritical(&myMutex);
-                    client_buffer[client].write(data);
+                    // This is what breaks serial downloads.
+                    int success = client_buffer[client].write(data);
                     vTaskExitCritical(&myMutex);
+                    if (!success) {
+                        grbl_send(client, "QQ/Data lost!!\r\n");
+                    }
 #if defined(ENABLE_SD_CARD)
                 } else {
                     if (data == '\r' || data == '\n') {

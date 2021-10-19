@@ -182,20 +182,30 @@ namespace WebUI {
     }
 
     void Telnet_Server::advance_rx_buffer_write_position(size_t data_size) {
-        _RXbufferSize += data_size;
-        if (get_rx_buffer_readable_size() == 0) {
-            // We consumed all available data.
-            // Reset the buffer so we can refill from the start.
-            reset_rx_buffer_read_position();
+        if (get_rx_buffer_writable_size() < data_size) {
+            grbl_send(CLIENT_ALL, "QQ/Telnet: tried to overflow write buffer\r\n");
+            return;
         }
+        _RXbufferSize += data_size;
     }
 
-    int Telnet_Server::get_rx_buffer_writable_size() { return TELNETRXBUFFERSIZE - _RXbufferSize; }
-    int Telnet_Server::get_rx_buffer_write_position() { return _RXbufferpos + _RXbufferSize; }
+    int Telnet_Server::get_rx_buffer_writable_size() {
+        return TELNETRXBUFFERSIZE - get_rx_buffer_write_position();
+    }
+
+    int Telnet_Server::get_rx_buffer_write_position() {
+        return _RXbufferpos + _RXbufferSize;
+    }
 
     void Telnet_Server::advance_rx_buffer_read_position(size_t data_size) {
         _RXbufferpos += data_size;
         _RXbufferSize -= data_size;
+        if (get_rx_buffer_readable_size() == 0) {
+            // We consumed all available data.
+            // Reset the buffer so we can refill from the start.
+            reset_rx_buffer_read_position();
+            grbl_send(CLIENT_ALL, "QQ/Telnet: emptied read buffer\r\n");
+        }
     }
 
     int Telnet_Server::get_rx_buffer_readable_size() {
@@ -208,11 +218,15 @@ namespace WebUI {
 
     void Telnet_Server::reset_rx_buffer_read_position() {
         _RXbufferpos = 0;
-        _RXbufferSize = TELNETRXBUFFERSIZE;
+        _RXbufferSize = 0;
     }
 
     int Telnet_Server::available() {
         return get_rx_buffer_readable_size();
+    }
+
+    int Telnet_Server::get_rx_buffer_available() {
+        return get_rx_buffer_writable_size();
     }
 
     bool Telnet_Server::push(uint8_t data) {
@@ -244,9 +258,11 @@ namespace WebUI {
     int Telnet_Server::read(void) {
         int v = peek();
         if (v == -1) {
+          grbl_send(CLIENT_ALL, ".");
           return v;
         }
         advance_rx_buffer_read_position(1);
+        grbl_sendf(CLIENT_ALL, "[%c]", v);
         //log_d("[TELNET]read %c",char(v));
         return v;
     }
