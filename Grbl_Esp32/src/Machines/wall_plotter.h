@@ -17,12 +17,12 @@
 
 #define SEGMENT_LENGTH 10  // in mm
 
-#define DEFAULT_X_STEPS_PER_MM 2048 / (20 * 3.14)
-#define DEFAULT_Y_STEPS_PER_MM 2048 / (20 * 3.14)
+#define DEFAULT_X_STEPS_PER_MM 1024 / (20 * 3.14)
+#define DEFAULT_Y_STEPS_PER_MM 1024 / (20 * 3.14)
 #define DEFAULT_Z_STEPS_PER_MM 1  // This is percent in servo mode
 
-#define DEFAULT_X_MAX_RATE 200.0     // mm/min
-#define DEFAULT_Y_MAX_RATE 200.0     // mm/min
+#define DEFAULT_X_MAX_RATE 400.0     // mm/min
+#define DEFAULT_Y_MAX_RATE 400.0     // mm/min
 #define DEFAULT_Z_MAX_RATE 100000.0  // mm/min
 
 #define DEFAULT_X_ACCELERATION 10.0   // mm/sec^2. 200 mm/sec^2 = 720000 mm/min^2
@@ -62,7 +62,7 @@
 #define DEFAULT_STEP_PULSE_MICROSECONDS 1
 #define DEFAULT_STEPPER_IDLE_LOCK_TIME 25
 
-#define DEFAULT_STATUS_REPORT_MASK 2  // MPos enabled
+#define DEFAULT_STATUS_REPORT_MASK 0  // MPos enabled
 
 #define DEFAULT_JUNCTION_DEVIATION 0.01  // mm
 #define DEFAULT_ARC_TOLERANCE 0.002      // mm

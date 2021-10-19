@@ -603,7 +603,7 @@ void report_realtime_status(uint8_t client) {
         int bufsize = DEFAULTBUFFERSIZE;
 #    if defined(ENABLE_WIFI) && defined(ENABLE_TELNET)
         if (client == CLIENT_TELNET) {
-            bufsize = WebUI::telnet_server.get_rx_buffer_available();
+            bufsize = WebUI::telnet_server.get_rx_buffer_readable_size();
         }
 #    endif  //ENABLE_WIFI && ENABLE_TELNET
 #    if defined(ENABLE_BLUETOOTH)

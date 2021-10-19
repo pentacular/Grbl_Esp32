@@ -52,6 +52,14 @@ namespace WebUI {
         ~Telnet_Server();
 
     private:
+        void advance_rx_buffer_read_position(size_t data_size);
+        void advance_rx_buffer_write_position(size_t data_size);
+        int get_rx_buffer_readable_size();
+        int get_rx_buffer_read_position();
+        int get_rx_buffer_writable_size();
+        int get_rx_buffer_write_position();
+        void reset_rx_buffer_read_position();
+
         static bool        _setupdone;
         static WiFiServer* _telnetserver;
         static WiFiClient  _telnetClients[MAX_TLNT_CLIENTS];

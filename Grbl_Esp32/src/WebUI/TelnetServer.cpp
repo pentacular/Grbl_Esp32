@@ -40,15 +40,13 @@ namespace WebUI {
 #    endif
 
     Telnet_Server::Telnet_Server() {
-        _RXbufferSize = 0;
-        _RXbufferpos  = 0;
+        reset_rx_buffer_read_position();
     }
 
     bool Telnet_Server::begin() {
         bool no_error = true;
         end();
-        _RXbufferSize = 0;
-        _RXbufferpos  = 0;
+        reset_rx_buffer_read_position();
 
         if (telnet_enable->get() == 0) {
             return false;
@@ -68,8 +66,7 @@ namespace WebUI {
 
     void Telnet_Server::end() {
         _setupdone    = false;
-        _RXbufferSize = 0;
-        _RXbufferpos  = 0;
+        reset_rx_buffer_read_position();
         if (_telnetserver) {
             delete _telnetserver;
             _telnetserver = NULL;
@@ -100,6 +97,8 @@ namespace WebUI {
         }
     }
 
+    // Note: this operation may drop data, as it only reports the amount written
+    // to the last client.
     size_t Telnet_Server::write(const uint8_t* buffer, size_t size) {
         size_t wsize = 0;
         if (!_setupdone || _telnetserver == NULL) {
@@ -142,16 +141,23 @@ namespace WebUI {
                     uint8_t buf[1024];
                     COMMANDS::wait(0);
                     int readlen  = _telnetClients[i].available();
-                    int writelen = TELNETRXBUFFERSIZE - available();
-                    if (readlen > 1024) {
-                        readlen = 1024;
-                    }
+                    int writelen = get_rx_buffer_writable_size();
                     if (readlen > writelen) {
                         readlen = writelen;
                     }
                     if (readlen > 0) {
-                        _telnetClients[i].read(buf, readlen);
-                        push(buf, readlen);
+                        // This looks be safe, but let's check the invariants.
+                        if (_telnetClients[i].read(buf, readlen) != readlen) {
+                          grbl_send(CLIENT_ALL, "QQ/Telnet/read: failed\r\n");
+                        } else {
+                          buf[readlen] = '\0';
+                          grbl_send(CLIENT_ALL, "QQ/Telnet/read/begin\r\n");
+                          grbl_send(CLIENT_ALL, (char *)buf);
+                          grbl_send(CLIENT_ALL, "\r\nQQ/Telnet/read/end\r\n");
+                        }
+                        if (!push(buf, readlen)) {
+                          grbl_send(CLIENT_ALL, "QQ/Telnet/push: failed\r\n");
+                        }
                     }
                     return;
                 }
@@ -168,29 +174,52 @@ namespace WebUI {
     }
 
     int Telnet_Server::peek(void) {
-        if (_RXbufferSize > 0) {
-            return _RXbuffer[_RXbufferpos];
+        if (get_rx_buffer_readable_size() >= 1) {
+            return _RXbuffer[get_rx_buffer_read_position()];
         } else {
             return -1;
         }
     }
 
-    int Telnet_Server::available() { return _RXbufferSize; }
+    void Telnet_Server::advance_rx_buffer_write_position(size_t data_size) {
+        _RXbufferSize += data_size;
+        if (get_rx_buffer_readable_size() == 0) {
+            // We consumed all available data.
+            // Reset the buffer so we can refill from the start.
+            reset_rx_buffer_read_position();
+        }
+    }
 
-    int Telnet_Server::get_rx_buffer_available() { return TELNETRXBUFFERSIZE - _RXbufferSize; }
+    int Telnet_Server::get_rx_buffer_writable_size() { return TELNETRXBUFFERSIZE - _RXbufferSize; }
+    int Telnet_Server::get_rx_buffer_write_position() { return _RXbufferpos + _RXbufferSize; }
+
+    void Telnet_Server::advance_rx_buffer_read_position(size_t data_size) {
+        _RXbufferpos += data_size;
+        _RXbufferSize -= data_size;
+    }
+
+    int Telnet_Server::get_rx_buffer_readable_size() {
+        return _RXbufferSize;
+    }
+
+    int Telnet_Server::get_rx_buffer_read_position() {
+        return _RXbufferpos;
+    }
+
+    void Telnet_Server::reset_rx_buffer_read_position() {
+        _RXbufferpos = 0;
+        _RXbufferSize = TELNETRXBUFFERSIZE;
+    }
+
+    int Telnet_Server::available() {
+        return get_rx_buffer_readable_size();
+    }
 
     bool Telnet_Server::push(uint8_t data) {
         log_i("[TELNET]push %c", data);
-        if ((1 + _RXbufferSize) <= TELNETRXBUFFERSIZE) {
-            int current = _RXbufferpos + _RXbufferSize;
-            if (current > TELNETRXBUFFERSIZE) {
-                current = current - TELNETRXBUFFERSIZE;
-            }
-            if (current > (TELNETRXBUFFERSIZE - 1)) {
-                current = 0;
-            }
-            _RXbuffer[current] = data;
-            _RXbufferSize++;
+        if (get_rx_buffer_writable_size() >= 1) {
+            _RXbuffer[get_rx_buffer_write_position()] = data;
+            advance_rx_buffer_write_position(1);
             log_i("[TELNET]buffer size %d", _RXbufferSize);
             return true;
         }
@@ -198,45 +227,32 @@ namespace WebUI {
     }
 
     bool Telnet_Server::push(const uint8_t* data, int data_size) {
-        if ((data_size + _RXbufferSize) <= TELNETRXBUFFERSIZE) {
-            int data_processed = 0;
-            int current        = _RXbufferpos + _RXbufferSize;
-            if (current > TELNETRXBUFFERSIZE) {
-                current = current - TELNETRXBUFFERSIZE;
-            }
+        if (get_rx_buffer_writable_size() >= data_size) {
             for (int i = 0; i < data_size; i++) {
-                if (current > (TELNETRXBUFFERSIZE - 1)) {
-                    current = 0;
+                if (!push(data[i])) {
+                    // This should be impossible, since we checked there was enough capacity in advance.
+                    grbl_send(CLIENT_ALL, "QQ/Telnet/push: failed\r\n");
                 }
-
-                _RXbuffer[current] = data[i];
-                current++;
-                data_processed++;
-
                 COMMANDS::wait(0);
                 //vTaskDelay(1 / portTICK_RATE_MS);  // Yield to other tasks
             }
-            _RXbufferSize += data_processed;
             return true;
         }
         return false;
     }
 
     int Telnet_Server::read(void) {
-        if (_RXbufferSize > 0) {
-            int v = _RXbuffer[_RXbufferpos];
-            //log_d("[TELNET]read %c",char(v));
-            _RXbufferpos++;
-            if (_RXbufferpos > (TELNETRXBUFFERSIZE - 1)) {
-                _RXbufferpos = 0;
-            }
-            _RXbufferSize--;
-            return v;
-        } else {
-            return -1;
+        int v = peek();
+        if (v == -1) {
+          return v;
         }
+        advance_rx_buffer_read_position(1);
+        //log_d("[TELNET]read %c",char(v));
+        return v;
     }
 
-    Telnet_Server::~Telnet_Server() { end(); }
+    Telnet_Server::~Telnet_Server() {
+        end();
+    }
 }
 #endif  // Enable TELNET && ENABLE_WIFI

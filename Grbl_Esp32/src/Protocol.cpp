@@ -41,6 +41,9 @@ client_line_t client_lines[CLIENT_COUNT];
 
 static void empty_line(uint8_t client) {
     client_line_t* cl = &client_lines[client];
+    grbl_send(CLIENT_ALL, "QQ/empty_line/begin\r\n");
+    grbl_send(CLIENT_ALL, cl->buffer);
+    grbl_send(CLIENT_ALL, "\r\nQQ/empty_line/end\r\n");
     cl->len           = 0;
     cl->buffer[0]     = '\0';
 }
@@ -62,6 +65,7 @@ Error add_char_to_line(char c, uint8_t client) {
         return Error::Ok;
     }
     if (cl->len == (LINE_BUFFER_SIZE - 1)) {
+        grbl_send(CLIENT_ALL, "QQ/add_char_to_line/overflow\r\n");
         return Error::Overflow;
     }
     if (c == '\r' || c == '\n') {
@@ -71,6 +75,8 @@ Error add_char_to_line(char c, uint8_t client) {
     }
     cl->buffer[cl->len++] = c;
     cl->buffer[cl->len]   = '\0';
+    grbl_send(CLIENT_ALL, cl->buffer);
+    grbl_send(CLIENT_ALL, "\r\n");
     return Error::Ok;
 }
 

@@ -127,9 +127,6 @@ bool cartesian_to_motors(float* target, plan_line_data_t* pl_data, float* positi
     float    p_dx, p_dy, p_dz;  // distances in each polar axis
     uint32_t segment_count;     // number of segments the move will be broken in to.
 
-    grbl_sendf(CLIENT_ALL, "QQ/coord_system: x=%4.2f y=%4.2f\r\n", gc_state.coord_system[X_AXIS], gc_state.coord_system[Y_AXIS]);
-    grbl_sendf(CLIENT_ALL, "QQ/coord_offset: x=%4.2f y=%4.2f\r\n", gc_state.coord_offset[X_AXIS], gc_state.coord_offset[Y_AXIS]);
-
     // calculate cartesian move distance for each axis
     dx = target[X_AXIS] - position[X_AXIS];
     dy = target[Y_AXIS] - position[Y_AXIS];
@@ -152,7 +149,7 @@ bool cartesian_to_motors(float* target, plan_line_data_t* pl_data, float* positi
         float cables[N_AXIS] = { 0 - (last_left - zero_left), 0 + (last_right - zero_right), last_z };
 
         if (!mc_line(cables, pl_data)) {
-            // grbl_sendf(CLIENT_ALL, "mc_line error\r\n");
+            grbl_sendf(CLIENT_ALL, "mc_line error\r\n");
             return false;
         }
     }

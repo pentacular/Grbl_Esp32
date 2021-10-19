@@ -160,6 +160,9 @@ static uint8_t getClientChar(uint8_t* data) {
 #if defined(ENABLE_WIFI) && defined(ENABLE_TELNET)
     if (WebUI::telnet_server.available()) {
         *data = WebUI::telnet_server.read();
+        // char buf[4] = "[ ]";
+        // buf[1] = *data;
+        // grbl_send(CLIENT_ALL, buf);
         return CLIENT_TELNET;
     }
 #endif
